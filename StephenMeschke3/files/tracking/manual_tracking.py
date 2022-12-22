@@ -2,7 +2,7 @@ import cv2, math, numpy as np
 
 # Path to source video:
 output_path = '/media/alex/ELISA_DD/TFG/StephenMeschke3/test_manual.csv'
-cap = cv2.VideoCapture('/media/alex/ELISA_DD/TFG/dataset/ss5_red_AlejandroAlonso.mp4')
+cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4')
 
 # Mouse callback function
 global click_list
@@ -55,14 +55,15 @@ while True:
         # Get the roi from the background
         roi = bg[y_offset:y_offset+roi_size, x_offset:x_offset+roi_size]
         #create crosshairs on roi
-        cv2.line(roi, (int(roi_size/2),0), (int(roi_size/2),roi_size), (123,234,123), 1)
-        cv2.line(roi, (0,int(roi_size/2)), (roi_size,int(roi_size/2)), (123,234,123), 1)
+        """ cv2.line(roi, (int(roi_size/2),0), (int(roi_size/2),roi_size), (123,234,123), 1)
+        cv2.line(roi, (0,int(roi_size/2)), (roi_size,int(roi_size/2)), (123,234,123), 1) """
         roi_h, roi_w, _ = roi.shape
         roi = cv2.resize(roi, (roi_w * roi_factor, roi_h * roi_factor))
     
     # Show frame
     if len(positions) == 0: cv2.imshow('img', img)
-    else: cv2.imshow('img', roi)
+    else: 
+        cv2.imshow('img', roi)
     
     # Wait, and allow the user to quit with the 'esc' key
     k = cv2.waitKey(1)
@@ -78,7 +79,7 @@ while True:
             user_input = click_list[-1]
             user_input = int(user_input[0]/roi_factor),int(user_input[1]/roi_factor)
             user_input = x_offset + user_input[0] - int(roi_size/2), y_offset + user_input[1] - int(roi_size/2)        
-
+            print(x_offset,y_offset,user_input[0],user_input[1])
         # Add the ball position to the data
         positions.append(user_input)
         # Print

@@ -6,7 +6,7 @@ color_values = 150,77,70,255,255,255
 color_values = 35,30,150,185,120,255 #RED_Alex
 
 # Capture your source video
-cap = cv2.VideoCapture('/media/alex/ELISA_DD/TFG/dataset/ss5_red_AlejandroAlonso.mp4')
+cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4')
 # Pick a path to save the data
 output_path = '/media/alex/ELISA_DD/TFG/StephenMeschke3/test_hybrid.csv'
 # How big is a ball? This is the dark blue circle (9 to 60)
