@@ -24,20 +24,29 @@ def book_initializer(system: str, ss:str) -> Workbook:
 
     return book
 
-#TODO seguramente no devuelve AA despues de Z, arreglar eso
-def get_letter_from_id(id: int) -> tuple[str,str]:
-    full = 0
-    while id/12 > 1:
-        full += 1
-        id -= 12
-    if full != 0:
-        return chr(ord('@')+(full))+chr(ord('@')+(id*2)),chr(ord('@')+(full))+chr(ord('@')+(id*2)+1)
-    else:
-        return chr(ord('@')+(id*2)),chr(ord('@')+(id*2)+1)
+def obtain_column_name(num: str) -> str:
+  letters = ""
+  # Add 1 so that A is index 0
+  num += 1
+  # Convert number to stirng, every 26 values start over
+  while num > 0:
+    num -= 1
+    letters = chr(num % 26 + 65) + letters
+    num //= 26
+ 
+  # Base case
+  if len(letters) == 0:
+    return "A"
+ 
+  return letters
+
+# Obtains the tuple represented by the ball's id
+def get_column_tuple_from_id(id: int) -> tuple[str,str]:
+    return obtain_column_name(id*2-1), obtain_column_name(id*2)
 
 def book_writer(book: Workbook, frame: int, id: int, coords: tuple[int, int]):
     sheetTracking = book[tracking_name]
-    letter_1,letter_2 = get_letter_from_id(id)
+    letter_1,letter_2 = get_column_tuple_from_id(id)
 
 
     if not sheetTracking[letter_1+'1'].value:
