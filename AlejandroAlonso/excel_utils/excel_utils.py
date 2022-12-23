@@ -2,7 +2,7 @@ from openpyxl import Workbook
 
 info_name = 'Info'
 tracking_name = 'Tracking'
-save_dir = '/media/alex/ELISA_DD/TFG/AlejandroAlonso/results/'
+save_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/'
 
 def book_initializer(system: str, ss:str) -> Workbook:
     book = Workbook()
@@ -59,7 +59,7 @@ def book_writer(book: Workbook, frame: int, id: int, coords: tuple[int, int]):
     sheetTracking[letter_1+f'{frame+2}'] = coords[0]
     sheetTracking[letter_2+f'{frame+2}'] = coords[1]
 
-def book_saver(book: Workbook, system: str, ss:str, sanitize: bool):
+def book_saver(book: Workbook, system: str, ss:str, sanitize: bool = False):
     if sanitize:
         book_sanitizer(book)
     book.save(f'{save_dir}tracking_{ss}_{system}.xlsx')
