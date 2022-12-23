@@ -8,7 +8,7 @@ output_path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/t
 
 roi_size=200
 roi_factor = 2
-roi_enable=True
+roi_enable=False
 BUFFER_MAX=300
 # -------------------- END PARAMETERS ----------------------
 # Parameters for the text in the user instructions
@@ -32,16 +32,20 @@ cv2.setMouseCallback('img', callback)
 wait_time=1
 proceed_to_next_frame = True
 positions = []
-positions_backtracking = []
 buffer=[]
+backtracking_buffer = []
 # Main loop
 while True:
     # If a user has made a click
     if proceed_to_next_frame:
         if not backtracking_mode:
             # Read frame of video
-            _, img = cap.read()
+            if len(backtracking_buffer)>0:
+                img = backtracking_buffer.pop()
+            else:
+                _, img = cap.read()
         else:
+            backtracking_buffer.append(img)
             img = buffer.pop()
 
         # Break if the video is over
@@ -53,7 +57,7 @@ while True:
 
         
 
-    if roi_active:
+    if roi_enable and roi_active:
         # Create a background that is bigger than the roi - avoid error when ball nears edge
         bg = np.zeros((img.shape[0]+roi_size, img.shape[1]+roi_size, 3), np.uint8)
         # Paste the image onto the background
@@ -77,6 +81,10 @@ while True:
     if k == 193: 
         backtracking_mode=True
         wait_time = 1
+    # User Presses F5, activate backtracking
+    if k == 194: 
+        backtracking_mode=False
+        wait_time = 1
     # User Presses F6, advance to the next frame and wait
     if k == 195: wait_time = 0
     # User presses F7, play slowly
@@ -94,12 +102,9 @@ while True:
         new_click = False
         proceed_to_next_frame = True
         if not backtracking_mode:
-            if len(positions_backtracking)!=0:
-                positions.append(positions_backtracking)
             positions.append((click_x, click_y))
         else:
             positions.pop()
-            positions_backtracking.append((click_x, click_y))
         
         if len(buffer) < BUFFER_MAX:
             if not backtracking_mode:
@@ -112,6 +117,6 @@ while True:
 
 
 
-print(positions)
+print(len(positions))
 cv2.destroyAllWindows()
 cap.release()
