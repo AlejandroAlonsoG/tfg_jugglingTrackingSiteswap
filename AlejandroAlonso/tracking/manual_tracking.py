@@ -1,29 +1,45 @@
-import cv2, math, numpy as np
+#------------------------------  HEADER  ------------------------------+
+# This program implements manual tracking to label videos of jugglers  |
+#                                                                      |
+# Author: Alejandro Alonso García                                      |
+# Full proyect repository:                                             |
+#                                                                      |
+# Most of the code in this file comes from Stephen Meschke "juggling"  |
+#  repo wich you can find in: https://github.com/smeschke/juggling     |
+#----------------------------------------------------------------------+
+
+import cv2, numpy as np
 import sys
 sys.path.insert(0, '../excel_utils')
 import excel_utils as eu
-# --------------------- START PARAMETERS -----------------------
-color_values = 35,30,150,185,120,255 #RED_Alex para apoyar el tracking por color
-# Capture your source video
-#source_url='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
-source_url='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4'
-# Pick a path to save the data
-output_path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/test_hybrid.csv'
 
-sys_name = 'AlejandroAlonso'
-ss = 'short'
-roi_size=200
-roi_factor = 2
-roi_enable=True
-BUFFER_MAX=300
-num_balls = 3
-# -------------------- END PARAMETERS ----------------------
-# Parameters for the text in the user instructions
-font, scale, color, thick = cv2.FONT_HERSHEY_SIMPLEX, .5, (255,0,0), 1
-click_x, click_y = 0,0
-click_x_old, click_y_old = 0,0
-new_click = False
-backtracking_mode = False
+#------------------------------ START PARAMETERS ------------------------------+
+
+color_values = 35,30,150,185,120,255 #red_AlejandroAlonso to help with color_tracking
+
+source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4' # Url of source video
+#source_url='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4'
+
+sys_name = 'red_AlejandroAlonso' # Name of system used for naming the excel book with the results
+ss = '5' # siteswap juggled for naming the excel book with the results
+
+roi_size=200 # Size of the ROI (Region Of Interest)
+roi_factor = 2 # Factor of the ROI (Region Of Interest)
+roi_enable=True # Enables de ROI when labeling frames
+
+BUFFER_MAX=300 # Max size of backtracking buffer
+
+num_balls = 5 # Number of balls to track
+
+#------------------------------ END PARAMETERS ------------------------------+
+
+# Global variables:
+click_x, click_y = 0,0 # Last click coords
+click_x_old, click_y_old = 0,0 # Previous click coords
+new_click = False # Check if any new click has occurred
+
+# This callback is called every new click.
+# It updates the click coords and set the new_click flag to True
 def callback(event, x, y, flags, param):
     global click_x, click_y
     global click_x_old, click_y_old
@@ -33,23 +49,33 @@ def callback(event, x, y, flags, param):
         click_x_old, click_y_old = click_x, click_y
         click_x, click_y = x,y
 
+
+font, scale, color, thick = cv2.FONT_HERSHEY_SIMPLEX, .5, (255,0,0), 1
+
 cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 cv2.setMouseCallback('img', callback)
+
+backtracking_mode = False
 wait_time=1
 proceed_to_next_frame = True
 all_positions = {}
+
+# Track 1 ball at a time
 for i in range(num_balls):
-    # Main loop
-    positions = []
-    buffer=[]
-    backtracking_buffer = []
-    cap = cv2.VideoCapture(source_url)
+    positions = [] # All coords of this iteration
+    buffer=[] # Buffer to enable backtracking
+    backtracking_buffer = [] # Buffer to review backtracked frames
+
+    cap = cv2.VideoCapture(source_path)
+    video_len = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+
     roi_active = False
+    # Main loop
     while True:
         # If a user has made a click
         if proceed_to_next_frame:
+            # If backtracking, read from the buffer, else, review backtracked frames (if any) and read from video
             if not backtracking_mode:
-                # Read frame of video
                 if len(backtracking_buffer)>0:
                     img = backtracking_buffer.pop()
                 else:
@@ -65,7 +91,12 @@ for i in range(num_balls):
                 print("Video ended")
                 break
 
-        
+        # Print instructions
+        cv2.putText(img, "Click on the ball to mark its coordenates and go to next frame", (50,40), font, scale, color, thick, cv2.LINE_AA)
+        cv2.putText(img, "Press F4 to activate backtracking mode", (50,80), font, scale, color, thick, cv2.LINE_AA)
+        cv2.putText(img, "Press F5 to disable backtracking mode", (50,120), font, scale, color, thick, cv2.LINE_AA)
+        cv2.putText(img, "Iteration frames left: {}".format(video_len-len(positions)), (50,160), font, scale, color, thick, cv2.LINE_AA)
+
         # Draw the previous ball positions on the screen
         try:
             for idx in range(35):
@@ -75,9 +106,11 @@ for i in range(num_balls):
                 cv2.circle(img, b, 2, 255, 2)
         except: pass
 
+        # Draw previous balls tracked
         for j in range(i-1,-1,-1):
             cv2.circle(img, all_positions[j][len(positions)], 7, 200, 2)
 
+        # If ROI, calculate it
         if roi_enable and roi_active:
             # Create a background that is bigger than the roi - avoid error when ball nears edge
             bg = np.zeros((img.shape[0]+roi_size, img.shape[1]+roi_size, 3), np.uint8)
@@ -87,9 +120,8 @@ for i in range(num_balls):
             roi = bg[click_y:click_y+roi_size, click_x:click_x+roi_size]
             roi_h, roi_w, _ = roi.shape
             roi = cv2.resize(roi, (roi_w * roi_factor, roi_h * roi_factor))
-        
-
-
+            # Draw iteration frames left
+            cv2.putText(roi, "Iteration frames left: {}".format(video_len-len(positions)), (10,20), font, scale, color, thick, cv2.LINE_AA)
 
         # Show frame and wait
         if roi_enable and roi_active:
@@ -97,6 +129,8 @@ for i in range(num_balls):
         else:
             cv2.imshow('img', img)
         k = cv2.waitKey(wait_time)
+
+        # User Presses Escape, finish iteration
         if k ==27: break
         # User Presses F4, activate backtracking
         if k == 193: 
@@ -106,15 +140,10 @@ for i in range(num_balls):
         if k == 194: 
             backtracking_mode=False
             wait_time = 1
-        # User Presses F6, advance to the next frame and wait
-        if k == 195: wait_time = 0
-        # User presses F7, play slowly
-        if k == 196: wait_time = 65
-        # User presses F8, max computer resources
-        if k == 197: wait_time = 1
 
-
+        # If any new click has happened
         if new_click:
+            # If is the first frame, activate the roi, else, traslate roi coords to global (full image) coords
             if roi_active:
                 click_x, click_y = int(click_x/roi_factor),int(click_y/roi_factor)
                 click_x, click_y = click_x_old + click_x - int(roi_size/2), click_y_old + click_y - int(roi_size/2)
@@ -122,11 +151,14 @@ for i in range(num_balls):
                 roi_active = True
             new_click = False
             proceed_to_next_frame = True
+
+            #If not backtracking, save the coords
             if not backtracking_mode:
                 positions.append((click_x, click_y))
             else:
                 positions.pop()
             
+            # Save the frame for future backtracking
             if len(buffer) < BUFFER_MAX:
                 if not backtracking_mode:
                     buffer.append(img)
@@ -135,14 +167,15 @@ for i in range(num_balls):
                 buffer.append(img)
         else: 
             proceed_to_next_frame = False
-
+    # Save this ball coords in the global dict
     all_positions[i]=positions
 
-
+# Save last ball coords in the global dict
 all_positions[i]=positions
 cap.release()
 cv2.destroyAllWindows()
 
+# Save data to excel book
 book = eu.book_initializer(sys_name, ss)
 for i in range(num_balls):
     for frame, position in enumerate(all_positions[i]):

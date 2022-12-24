@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, '../excel_utils')
 import excel_utils as eu
 
-system = 'test'
+""" system = 'test'
 ss = '3'
 book = eu.book_initializer(system, ss)
 with open("demofile2.txt", "r") as infile:
@@ -12,4 +12,7 @@ with open("demofile2.txt", "r") as infile:
         coord_y = position.split(", ")[1][:-2]
         print(int(frame)+1)
         eu.book_writer(book, int(frame)+1, int(id), (int(coord_x), int(coord_y)))
-eu.book_saver(book,system, ss)
+eu.book_saver(book,system, ss) """
+
+data = eu.load_data('/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/tracking_5_AlejandroAlonso_red.xlsx')
+print(data)

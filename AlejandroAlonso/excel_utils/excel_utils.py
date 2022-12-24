@@ -1,4 +1,4 @@
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 
 info_name = 'Info'
 tracking_name = 'Tracking'
@@ -71,3 +71,21 @@ def book_sanitizer(book: Workbook):
         count += 1
     book[tracking_name].delete_rows(3,count-3)
     print("Book sanitized, ", count-3, " rows deleted")
+
+def load_data(path: str):
+    book = load_workbook(path, read_only= True, data_only= True)
+    sheet_info = book[info_name]
+    sheetTracking = book[tracking_name]
+    num_balls = sheet_info['C4'].value
+
+    data = {}
+    for b in range(0, num_balls):
+        print(b)
+        ball_x_column, ball_y_column = get_column_tuple_from_id(b+1)
+        positions = []
+        for i in range(3, sheetTracking.max_row+1):
+            positions.append((sheetTracking[ball_x_column+f'{i}'].value,sheetTracking[ball_y_column+f'{i}'].value))
+        data[b]=positions
+    
+    return data
+
