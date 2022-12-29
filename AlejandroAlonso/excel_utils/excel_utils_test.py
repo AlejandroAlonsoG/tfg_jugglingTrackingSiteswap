@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '../excel_utils')
+import openpyxl
 import excel_utils as eu
 
 """ system = 'test'
@@ -14,5 +14,11 @@ with open("demofile2.txt", "r") as infile:
         eu.book_writer(book, int(frame)+1, int(id), (int(coord_x), int(coord_y)))
 eu.book_saver(book,system, ss) """
 
-data = eu.load_data('/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/tracking_5_AlejandroAlonso_red.xlsx')
-print(data)
+""" data = eu.load_data('/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/tracking_5_AlejandroAlonso_red.xlsx')
+print(data) """
+
+book = openpyxl.load_workbook("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_AlejandroAlonso.xlsx")
+
+eu.denoise(book)
+
+eu.book_saver(book, "denoise", "short")

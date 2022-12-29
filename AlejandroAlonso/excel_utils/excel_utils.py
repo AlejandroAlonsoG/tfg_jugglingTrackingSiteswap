@@ -1,8 +1,9 @@
 from openpyxl import Workbook, load_workbook
+import itertools
 
 info_name = 'Info'
 tracking_name = 'Tracking'
-save_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/'
+save_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/'
 
 def book_initializer(system: str, ss:str) -> Workbook:
     book = Workbook()
@@ -41,6 +42,7 @@ def obtain_column_name(num: str) -> str:
   return letters
 
 # Obtains the tuple represented by the ball's id
+# openpyxl.utils.cell.get_column_letter(3) # returns "C"
 def get_column_tuple_from_id(id: int) -> tuple[str,str]:
     return obtain_column_name(id*2-1), obtain_column_name(id*2)
 
@@ -65,6 +67,7 @@ def book_saver(book: Workbook, system: str, ss:str, sanitize: bool = False):
     book.save(f'{save_dir}tracking_{ss}_{system}.xlsx')
     print("Book "+ f'tracking_{ss}_{system}.xlsx' +" successfully saved in: "+ save_dir)
 
+""" Quita frames sobrantes al principio """
 def book_sanitizer(book: Workbook):
     count = 3
     while not book[tracking_name][f'A{count}'].value:
@@ -88,4 +91,77 @@ def load_data(path: str):
         data[b]=positions
     
     return data
+
+def get_col_length(col, start=2):
+    count = 0
+    for cell in itertools.islice(col, start, None):
+        if cell.value is not None:
+            count += 1
+        else:
+            break
+
+    return count
+
+def get_first_cell_index(col):
+    for idx,cell in enumerate(itertools.islice(col,2,None)):
+        if cell.value is not None:
+            break
+    return idx+2
+
+def get_last_cell_index(col):
+    for idx,cell in enumerate(itertools.islice(col,get_first_cell_index(col),None)):
+        if cell.value is None:
+            break
+    return idx+1
+
+def denoise(book: Workbook):
+    sheetTracking = book[tracking_name]
+    range_till_end = 5
+    x_range = 100
+    y_range = 250
+    cols_seen = 1
+    # Por cada columna en la hoja
+    while True:
+        for col in itertools.islice(sheetTracking.iter_cols(), cols_seen, None, 2):
+            print(cols_seen)
+            ended = True
+            ended_inner = True
+            print("iter")
+            # Si termina antes de lo que le toca (teniendo en cuenta un rango)
+            if (get_col_length(col) + range_till_end) < sheetTracking.max_row:
+                # Compruebo con el resto de columnas
+                for col2 in itertools.islice(sheetTracking.iter_cols(), cols_seen+2, None,2):
+                    # Si empieza después y su primera celda está dentro de cierto rango
+                    col_last_cell = get_last_cell_index(col)
+                    col2_first_cell = get_first_cell_index(col2)
+                    # Si alguna está vacía (ha sido movida por ejemplo) lanza excepcion
+                    try:
+                        if col2[col2_first_cell].row > col[col_last_cell].row:
+                            pass
+                        val1 = col[col_last_cell].value
+                        val2 = col2[col2_first_cell].value
+                        if abs(col[col_last_cell].value-col2[col2_first_cell].value)<=x_range:
+                            pass
+                        if abs((col[col_last_cell].offset(column=1)).value-(col2[col2_first_cell].offset(column=1)).value) <= y_range:
+                            pass
+                        if col2[col2_first_cell].row > col[col_last_cell].row and abs(col[col_last_cell].value-col2[col2_first_cell].value)<=x_range and abs((col[col_last_cell].offset(column=1)).value-(col2[col2_first_cell].offset(column=1)).value) <= y_range:
+                            # Corto el contenido y la meto debajo mía
+                            range = col2[col2_first_cell].coordinate + ":" + col2[get_last_cell_index(col2)+3].offset(column=1).coordinate
+                            cols=-(int(col2[0].column)-cols_seen)
+                            sheetTracking.move_range(range, cols=-(int(col2[0].column)-cols_seen)+1)
+
+                            # Borro la columna vacía
+                            sheetTracking.delete_cols(col2[0].col_idx, 2)
+                            
+                            # Salgo para volver a comparar esa columna desde el principio y terminar de completarla si es necesario
+                            ended = False
+                            break
+                    except:
+                        pass
+            if ended:
+                cols_seen += 2
+
+        break
+
+
 
