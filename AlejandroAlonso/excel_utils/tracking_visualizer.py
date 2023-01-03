@@ -5,7 +5,7 @@ import excel_utils as eu
 source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_Unknown.mp4' # Url of source video
 path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_denoise.xlsx'
 
-#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4' # Url of source video
+source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4' # Url of source video
 #path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_AlejandroAlonso(copy).xlsx'
 
 #source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4' # Url of source video
@@ -13,7 +13,7 @@ path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excel
 
 output_path='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/videos/'
 
-num_balls=1
+num_balls=3
 visualize=False
 
 
@@ -29,9 +29,11 @@ num_frame=0
 ret=True
 while(cap.isOpened()):
     if ret==True:
-        if num_frame <300:
-            for i in range(num_balls):
-                cv2.circle(img, data[i][num_frame], 20, (0, 0, 255), -1)
+        for i in range(num_balls):
+            if len(data[i]) > num_frame: # Puede pasar que el tracking no llegue al ultimo frame
+                print(len(data[i]), num_frame)
+                coords = data[i][num_frame]
+                cv2.circle(img, coords, 20, (0, 0, 255), -1)
         num_frame +=1
         out.write(img)
         if visualize:
