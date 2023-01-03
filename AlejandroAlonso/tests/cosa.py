@@ -1,14 +1,10 @@
-
-for i in range(1,3):
-  for j in range(5,7):
-    if i==1:
-      if j==6:
-        print("a")
-        break
-      print("b")
-      break
-    print("c")
-    break
+a = True
+b = False
+if a:
+  print("a")
+if b:
+  print("b")
+if a == True:
+  print("c")
+if b == True:
   print("d")
-  break
-print("e")

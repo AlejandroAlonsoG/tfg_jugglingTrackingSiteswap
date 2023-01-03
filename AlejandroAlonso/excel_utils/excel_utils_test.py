@@ -17,7 +17,7 @@ eu.book_saver(book,system, ss) """
 """ data = eu.load_data('/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/tracking_5_AlejandroAlonso_red.xlsx')
 print(data) """
 
-book = openpyxl.load_workbook("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_AlejandroAlonso.xlsx")
+book = openpyxl.load_workbook("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_5_bartonski.xlsx")
 
 eu.denoise(book)
 

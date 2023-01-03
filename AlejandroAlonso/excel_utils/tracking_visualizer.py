@@ -2,19 +2,22 @@ import sys, cv2
 sys.path.insert(0, '../excel_utils')
 import excel_utils as eu
 
-#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4' # Url of source video
-#path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_AlejandroAlonso.xlsx'
+source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_Unknown.mp4' # Url of source video
+path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_denoise.xlsx'
 
-source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4' # Url of source video
-path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_5_AlejandroAlonso_red.xlsx'
+#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4' # Url of source video
+#path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_AlejandroAlonso(copy).xlsx'
+
+#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4' # Url of source video
+#path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_5_AlejandroAlonso_red.xlsx'
+
 output_path='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/videos/'
 
-num_balls=5
+num_balls=1
 visualize=False
 
 
 data = eu.load_data(path_book)
-
 cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
 cap = cv2.VideoCapture(source_path)
@@ -26,8 +29,9 @@ num_frame=0
 ret=True
 while(cap.isOpened()):
     if ret==True:
-        for i in range(num_balls):
-            cv2.circle(img, data[i][num_frame], 20, (0, 0, 255), -1)
+        if num_frame <300:
+            for i in range(num_balls):
+                cv2.circle(img, data[i][num_frame], 20, (0, 0, 255), -1)
         num_frame +=1
         out.write(img)
         if visualize:

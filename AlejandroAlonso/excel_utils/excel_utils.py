@@ -109,10 +109,11 @@ def get_first_cell_index(col):
     return idx+2
 
 def get_last_cell_index(col):
-    for idx,cell in enumerate(itertools.islice(col,get_first_cell_index(col),None)):
+    first_cell_index = get_first_cell_index(col)
+    for idx,cell in enumerate(itertools.islice(col,first_cell_index,None)):
         if cell.value is None:
             break
-    return idx+1
+    return idx+first_cell_index-1
 
 def denoise(book: Workbook):
     sheetTracking = book[tracking_name]
@@ -122,6 +123,7 @@ def denoise(book: Workbook):
     cols_seen = 1
     # Por cada columna en la hoja
     while True:
+        print("out")
         for col in itertools.islice(sheetTracking.iter_cols(), cols_seen, None, 2):
             print(cols_seen)
             ended = True
@@ -146,7 +148,8 @@ def denoise(book: Workbook):
                             pass
                         if col2[col2_first_cell].row > col[col_last_cell].row and abs(col[col_last_cell].value-col2[col2_first_cell].value)<=x_range and abs((col[col_last_cell].offset(column=1)).value-(col2[col2_first_cell].offset(column=1)).value) <= y_range:
                             # Corto el contenido y la meto debajo mía
-                            range = col2[col2_first_cell].coordinate + ":" + col2[get_last_cell_index(col2)+3].offset(column=1).coordinate
+                            tmp = get_last_cell_index(col2)
+                            range = col2[col2_first_cell].coordinate + ":" + col2[get_last_cell_index(col2)+1].offset(column=1).coordinate
                             cols=-(int(col2[0].column)-cols_seen)
                             sheetTracking.move_range(range, cols=-(int(col2[0].column)-cols_seen)+1)
 
@@ -160,8 +163,10 @@ def denoise(book: Workbook):
                         pass
             if ended:
                 cols_seen += 2
-
-        break
+            else:
+                break
+        if ended:
+            break
 
 
 
