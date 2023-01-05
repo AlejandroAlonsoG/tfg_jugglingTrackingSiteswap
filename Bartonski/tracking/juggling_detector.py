@@ -10,10 +10,10 @@ import configuration
 
 #*edit*
 import sys
-sys.path.insert(0, '/media/alex/ELISA_DD/TFG/AlejandroAlonso/excel_utils')
+sys.path.insert(0, '../../AlejandroAlonso/excel_utils')
 import excel_utils
 system = "bartonski"
-ss = "5"
+ss = "short"
 #*edit*
 
 
@@ -176,23 +176,24 @@ def track( contours, read_masks ):
     global last_frame_objects
     for contour in contours:
         area = cv2.contourArea(contour)
-        if area > o.area_threshold:
+        if area > o.area_threshold: # Comprueba que el contorno sea mayor al area minima seleccionada
             frame_object = {}
             frame_object["center"]=get_center(contour)
             frame_object["seen"]=False
             frame_object["contour"] = contour
             frame_object["area"] = area
-            frame_object["type"] = read_mask_type( frame_object["center"], read_masks )
+            frame_object["type"] = read_mask_type( frame_object["center"], read_masks ) # Creo que devuelve el tipo de mascara a usar
             for lfo in last_frame_objects:
                 offset_x = frame_object["center"][0] - lfo["center"][0]
                 offset_y = frame_object["center"][1] - lfo["center"][1]
-                if ( math.hypot(offset_x, offset_y) <= tracking_threshold
+                if ( math.hypot(offset_x, offset_y) <= tracking_threshold # Comprueba que el objeto no esté demasiado lejos del anterior visto
                      and frame_object["type"] is not None ):
-                    frame_object["object_id"] = lfo["object_id"]
-                    frame_object["seen"] = True
+                    frame_object["object_id"] = lfo["object_id"] # Asigna el que está viendo con la misma etiqueta que el anterior
+                    frame_object["seen"] = True # Marca que ya lo ha visto
             #print( f"frame_object: {frame_object}")
             frame_objects.append(frame_object)
     new_frame_objects = []
+    # Asigna un id a cada objeto
     for fo in frame_objects:
         if fo["seen"] == False:
             object_id += 1
@@ -200,29 +201,30 @@ def track( contours, read_masks ):
         new_frame_objects.append(fo)
     last_frame_objects = new_frame_objects.copy()
     #print( object_id )
+    # Basicamente devuelve un array de diccionarios donde cada diccionario es sobre un objeto (contorno suficientemente grande) que se ha encontrado en el frame
     return new_frame_objects
 # Video Read Loop --------------------------------------------------------------
 
 ret, frame = cap.read()
 
 book = excel_utils.book_initializer(system,ss) #*edit*
-while ret and current_frame <= o.end_frame:
-    if current_frame < o.start_frame:
+while ret and current_frame <= o.end_frame: # Mientras la camara devuelva algo y no hayamos llegado al final opcionalmente especificado por el usuario
+    if current_frame < o.start_frame: # Si no hemos llegado al principio opcionalmente especificado por el usuario pasa frames hasta llegar
         ret, frame = cap.read()
         current_frame += 1
         continue
 
-    throw_roi = frame[0 : o.throw_roi_bottom, throw_roi_left: throw_roi_right ]
+    throw_roi = frame[0 : o.throw_roi_bottom, throw_roi_left: throw_roi_right ] # Se define el roi como el cuadrado entre esos puntos. Si no se especifica nada al principio valen lo que la imagen
     #*edit*print( f"current_frame: {current_frame}")
-    if o.blur_radius is not None:
+    if o.blur_radius is not None: # Si no se ha especificado argumento pues pasando
         blur_diameter = o.blur_radius * 2 + 1
         mask_input = cv2.GaussianBlur(throw_roi, (blur_diameter, blur_diameter), 0)
     else:
-        mask_input = throw_roi
-    mask = object_detector.apply(mask_input)
-    _, mask = cv2.threshold( mask, o.grey_threshold-1, o.grey_threshold,
+        mask_input = throw_roi # Para el caso la máscara de entrada es lo que teníamos de roi
+    mask = object_detector.apply(mask_input) # Básicamente la máscara es aplicar BackgroundSubstractor con o.detector_history y o.detector_threshold
+    _, mask = cv2.threshold( mask, o.grey_threshold-1, o.grey_threshold, # Se pasa la máscara por un threshold de grises
                                 cv2.THRESH_BINARY )
-    contours, _ = cv2.findContours( mask,
+    contours, _ = cv2.findContours( mask, # Desde el resultado de esa máscara se sacan los contornos
                                     cv2.RETR_TREE,
                                     cv2.CHAIN_APPROX_SIMPLE )
     if o.show_mask:
@@ -235,8 +237,10 @@ while ret and current_frame <= o.end_frame:
     if o.grid:
         show_grid( image )
 
-    tracked_objects=track(contours, read_masks )
+    tracked_objects=track(contours, read_masks ) # Read_masks tiene las mascaras para las bolas y cada una de las manos
     #*edit*print(f"tracked_objects: {tracked_objects}")
+    # tracked_objects basicamente es un array de diccionarios donde cada diccionario es sobre un objeto (contorno suficientemente grande) que se ha encontrado en el frame
+    # Creo que este frame lo que hace basicamente es pintar todo
     for to in tracked_objects:
         # print(f"to: {to}")
         centers.append(to["center"])
@@ -246,13 +250,13 @@ while ret and current_frame <= o.end_frame:
         if t is not None:
             cv2.circle(trails_write_mask[t], (c[0], c[1]), 2, (255), -1)
 
-        if trails:
+        if trails: # Flag del parser también
             trails_image = cv2.bitwise_and(trails_color_image, trails_color_image, mask=trails_mask)
             image = cv2.bitwise_or(image, trails_image)
         cv2.drawContours(image, [to["contour"]], -1, (0, 255, 0), 2)
         oid=to["object_id"]
         #*edit*print(f"to[object_id]: {oid} to[center] {to['center']}")
-        #excel_utils.book_writer(book, current_frame, oid, to['center']) #*edit*
+        excel_utils.book_writer(book, current_frame, oid, to['center']) #*edit*
         object_labels( image, f"{to['object_id']} {to['type']}", to["center"], 0, 2)
         if o.area_labels:
             label( image, to["area"], to["center"], 20, 3 )
@@ -281,7 +285,7 @@ if left_hand_mask is not None:
 if right_hand_mask is not None:
     cv2.imwrite( right_hand_mask, trails_write_mask['right_hand'] )
 
-excel_utils.book_saver(book,system,ss, sanitize=True)  #*edit*
+excel_utils.book_saver(book,system,ss, sanitize=False)  #*edit*
 
 cap.release()
 out.release()

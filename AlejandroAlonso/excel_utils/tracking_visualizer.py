@@ -13,7 +13,7 @@ source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4' # 
 
 output_path='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/videos/'
 
-num_balls=3
+num_balls=8
 visualize=False
 
 

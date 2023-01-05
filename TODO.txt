@@ -1,0 +1,5 @@
+Hacer que la funcion de cargar los datos no lea el número de bolas si no que cargue todas las columnas que haya en la segunda hoja
+Terminar el denoise para que borre columnas con menos de X elementos
+Terminar el denoise para que renombre las columnas ya puestos
+Hacer una prueba e imprimir cada cosa del denoise con un color distinto porque igual esta mezclando cosas pero visualmente no se nota
+Mirar el tracking de StephenMeschke para ver si se puede usar su sistema y trackear varias bolas a la vez
