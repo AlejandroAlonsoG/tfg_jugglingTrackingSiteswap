@@ -77,13 +77,11 @@ def book_sanitizer(book: Workbook):
 
 def load_data(path: str):
     book = load_workbook(path, read_only= True, data_only= True)
-    sheet_info = book[info_name]
     sheetTracking = book[tracking_name]
-    num_balls = sheet_info['C4'].value
+    num_balls = (sheetTracking.max_column-1)/2
 
     data = {}
     for b in range(0, num_balls):
-        print(b)
         ball_x_column, ball_y_column = get_column_tuple_from_id(b+1)
         positions = []
         for i in range(3, sheetTracking.max_row+1):
@@ -92,13 +90,18 @@ def load_data(path: str):
     
     return data
 
-def get_col_length(col, start=2):
+def get_col_length(col, start=2, no_spaces=True):
     count = 0
-    for cell in itertools.islice(col, start, None):
-        if cell.value is not None:
-            count += 1
-        else:
-            break
+    if no_spaces:
+        for cell in itertools.islice(col, start, None):
+            if cell.value is not None:
+                count += 1
+            else:
+                break
+    else:
+        for cell in itertools.islice(col, start, None):
+            if cell.value is not None:
+                count += 1
 
     return count
 
@@ -120,12 +123,12 @@ def denoise(book: Workbook):
     range_till_end = 5
     x_range = 100
     y_range = 250
+    len_threshold  = 3
+    row_diff_threshold = 10
     cols_seen = 1
     # Por cada columna en la hoja
     while True:
-        print("out")
         for col in itertools.islice(sheetTracking.iter_cols(), cols_seen, None, 2):
-            print(cols_seen)
             ended = True
             ended_inner = True
             print("iter")
@@ -138,19 +141,17 @@ def denoise(book: Workbook):
                     col2_first_cell = get_first_cell_index(col2)
                     # Si alguna está vacía (ha sido movida por ejemplo) lanza excepcion
                     try:
-                        if col2[col2_first_cell].row > col[col_last_cell].row:
-                            pass
-                        val1 = col[col_last_cell].value
-                        val2 = col2[col2_first_cell].value
-                        if abs(col[col_last_cell].value-col2[col2_first_cell].value)<=x_range:
-                            pass
-                        if abs((col[col_last_cell].offset(column=1)).value-(col2[col2_first_cell].offset(column=1)).value) <= y_range:
-                            pass
-                        if col2[col2_first_cell].row > col[col_last_cell].row and abs(col[col_last_cell].value-col2[col2_first_cell].value)<=x_range and abs((col[col_last_cell].offset(column=1)).value-(col2[col2_first_cell].offset(column=1)).value) <= y_range:
+                        col2_after_col1 = col2[col2_first_cell].row > col[col_last_cell].row
+                        row_diffs = (col2[col2_first_cell].row - col[col_last_cell].row)
+                        if row_diffs <= row_diff_threshold:
+                            diff_in_xrange = abs(col[col_last_cell].value-col2[col2_first_cell].value)<= (col2[col2_first_cell].row - col[col_last_cell].row) * x_range
+                            diff_in_yrange = abs((col[col_last_cell].offset(column=1)).value-(col2[col2_first_cell].offset(column=1)).value) <= (col2[col2_first_cell].row - col[col_last_cell].row) * y_range
+                        else:
+                            diff_in_xrange = False
+                            diff_in_yrange = False
+                        if col2_after_col1 and diff_in_xrange and diff_in_yrange:
                             # Corto el contenido y la meto debajo mía
-                            tmp = get_last_cell_index(col2)
                             range = col2[col2_first_cell].coordinate + ":" + col2[get_last_cell_index(col2)+1].offset(column=1).coordinate
-                            cols=-(int(col2[0].column)-cols_seen)
                             sheetTracking.move_range(range, cols=-(int(col2[0].column)-cols_seen)+1)
 
                             # Borro la columna vacía
@@ -167,6 +168,19 @@ def denoise(book: Workbook):
                 break
         if ended:
             break
+    # Borra las columnas que sean mas cortas que el umbral (deberían ser ruido)
+    # rms es la cuenta de columnas borradas, porque al usar delete_cols actualiza la hoja pero el celda.col_idx no se actualiza a dos valores menos
+    rms = 0
+    id = 0
+    for col in itertools.islice(sheetTracking.iter_cols(), 1, None, 2):
+        total_col_len = get_col_length(col, no_spaces=False)
+        if total_col_len <= len_threshold:
+            sheetTracking.delete_cols(col[0].col_idx-rms, 2)
+            rms += 2
+        else: 
+            sheetTracking[col[0].coordinate] = f'Bola num {id+1}'
+            id += 1
+
 
 
 

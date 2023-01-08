@@ -1,5 +1,9 @@
-Hacer que la funcion de cargar los datos no lea el número de bolas si no que cargue todas las columnas que haya en la segunda hoja
-Terminar el denoise para que borre columnas con menos de X elementos
-Terminar el denoise para que renombre las columnas ya puestos
-Hacer una prueba e imprimir cada cosa del denoise con un color distinto porque igual esta mezclando cosas pero visualmente no se nota
+Terminar el denoise para que renombre las columnas ya puestos -> Queda ultima columna
+Hacer que el visualizer imprima un cuadrado por bola con el nombre de la bola
+Hacer una prueba e imprimir cada cosa del denoise y comprobar bien porque igual esta mezclando cosas pero visualmente no se nota
 Mirar el tracking de StephenMeschke para ver si se puede usar su sistema y trackear varias bolas a la vez
+
+
+-3 Mirar que al concatenar columnas en el denoise esté teniendo en cuenta que es X rango por cada Y frames, no simplemenete el rango a lo loquer
+-2 Terminar el denoise para que borre columnas con menos de X elementos
+-1 Hacer que la funcion de cargar los datos no lea el número de bolas si no que cargue todas las columnas que haya en la segunda hoja
