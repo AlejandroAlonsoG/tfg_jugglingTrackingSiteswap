@@ -2,8 +2,9 @@ import sys, cv2
 sys.path.insert(0, '../excel_utils')
 import excel_utils as eu
 
-source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_Unknown.mp4' # Url of source video
-path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_denoise.xlsx'
+#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_Unknown.mp4' # Url of source video
+#path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_denoise.xlsx'
+path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_StephenMeschke.xlsx' 
 
 source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4' # Url of source video
 #path_book='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_AlejandroAlonso(copy).xlsx'
@@ -13,11 +14,11 @@ source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4' # 
 
 output_path='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/videos/'
 
-num_balls=8
 visualize=False
+square_len=50
 
 
-data = eu.load_data(path_book)
+data,num_balls = eu.load_data(path_book)
 cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
 cap = cv2.VideoCapture(source_path)
@@ -30,10 +31,15 @@ ret=True
 while(cap.isOpened()):
     if ret==True:
         for i in range(num_balls):
-            if len(data[i]) > num_frame: # Puede pasar que el tracking no llegue al ultimo frame
+            if len(data[i]) > num_frame and data[i][num_frame][0] is not None: # Puede pasar que el tracking no llegue al ultimo frame o que para ese frame no haya datos
                 print(len(data[i]), num_frame)
-                coords = data[i][num_frame]
-                cv2.circle(img, coords, 20, (0, 0, 255), -1)
+                coords_x, coords_y = data[i][num_frame][0], data[i][num_frame][1]
+                #cv2.circle(img, coords, 20, (0, 0, 255), -1)
+                start_point = (coords_x-square_len//2, coords_y-square_len//2)
+                end_point = (coords_x+square_len//2, coords_y+square_len//2)
+                cv2.rectangle(img, start_point, end_point, (0, 0, 255), 2)
+                org = (coords_x+square_len//2+2, coords_y-square_len//2+2)
+                cv2.putText(img, "Bola {}".format(i+1), org, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         num_frame +=1
         out.write(img)
         if visualize:

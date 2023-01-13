@@ -1,9 +1,15 @@
+Mirar el tracking de javivi
+El denoiser no funciona bien, porque no tiene en cuenta las trayectorias. Habría que hacer que desde la columna calculara la trayectoria aproximada de la bola, desde ahí ver el resto de columnas que empiezan después y la primera celda de alguna otra columna cuadra con la trayectoria (teniendo en cuenta diferencia de frames) entonces es cuando se hace el append. Tal y como está ahora puede pillar coordenadas cercanas pero que no tengan sentido y mezcla bolas
 Terminar el denoise para que renombre las columnas ya puestos -> Queda ultima columna
-Hacer que el visualizer imprima un cuadrado por bola con el nombre de la bola
-Hacer una prueba e imprimir cada cosa del denoise y comprobar bien porque igual esta mezclando cosas pero visualmente no se nota
-Mirar el tracking de StephenMeschke para ver si se puede usar su sistema y trackear varias bolas a la vez
 
 
+-8 Desde Stephen, mirar:
+    - Ordenar los contornos por tamaño y cojer solo los x primeros (habría que valorar cuales Xs, igual simplemente pasar numero de bolas a mano)
+    - Coger todos pero aplicar algo tipo supresión de no-máximos para quitar multiples detecciones sobre la misma bola
+-7 Mirar el tracking de StephenMeschke para ver si se puede usar su sistema y trackear varias bolas a la vez
+-6 Hacer que el visualizer no necesite el numero de bolas
+-5 Hacer una prueba e imprimir cada cosa del denoise y comprobar bien porque igual esta mezclando cosas pero visualmente no se nota
+-4 Hacer que el visualizer imprima un cuadrado por bola con el id de la bola
 -3 Mirar que al concatenar columnas en el denoise esté teniendo en cuenta que es X rango por cada Y frames, no simplemenete el rango a lo loquer
 -2 Terminar el denoise para que borre columnas con menos de X elementos
 -1 Hacer que la funcion de cargar los datos no lea el número de bolas si no que cargue todas las columnas que haya en la segunda hoja

@@ -1,10 +1,7 @@
-a = True
-b = False
-if a:
-  print("a")
-if b:
-  print("b")
-if a == True:
-  print("c")
-if b == True:
-  print("d")
+l = [1,2,3,4,5,6]
+
+for elem in l:
+    if elem==3:
+        l.pop(2)
+
+print(l)

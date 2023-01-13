@@ -78,7 +78,7 @@ def book_sanitizer(book: Workbook):
 def load_data(path: str):
     book = load_workbook(path, read_only= True, data_only= True)
     sheetTracking = book[tracking_name]
-    num_balls = (sheetTracking.max_column-1)/2
+    num_balls = int((sheetTracking.max_column-1)/2)
 
     data = {}
     for b in range(0, num_balls):
@@ -88,7 +88,7 @@ def load_data(path: str):
             positions.append((sheetTracking[ball_x_column+f'{i}'].value,sheetTracking[ball_y_column+f'{i}'].value))
         data[b]=positions
     
-    return data
+    return data, num_balls
 
 def get_col_length(col, start=2, no_spaces=True):
     count = 0
@@ -173,13 +173,14 @@ def denoise(book: Workbook):
     rms = 0
     id = 0
     for col in itertools.islice(sheetTracking.iter_cols(), 1, None, 2):
-        total_col_len = get_col_length(col, no_spaces=False)
+        """ total_col_len = get_col_length(col, no_spaces=False)
         if total_col_len <= len_threshold:
             sheetTracking.delete_cols(col[0].col_idx-rms, 2)
             rms += 2
         else: 
             sheetTracking[col[0].coordinate] = f'Bola num {id+1}'
-            id += 1
+            id += 1 """
+        print(col[0].value)
 
 
 
