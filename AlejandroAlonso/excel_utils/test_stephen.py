@@ -3,7 +3,7 @@ import cv2, numpy as np
 
 import excel_utils as eu
 system = "StephenMeschke"
-ss = "short"
+ss = "ss5"
 
 # H,S,V range of the object to be tracked
 
@@ -14,11 +14,9 @@ h,s,v,h1,s1,v1 = 35,30,150,185,120,255 #RED_Alex
 #h,s,v,h1,s1,v1 = 156,74,76,166,255,255 #pink
 #h,s,v,h1,s1,v1 = 27,0,0,82,190,255 #GREEN
 
-# Define data's output path
-output_path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_StephenMeschke.xlsx'
-
 # Define the source path
-cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4')
+#cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4')
+cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4')
 
 non_max_suppresion_threshold=50
 

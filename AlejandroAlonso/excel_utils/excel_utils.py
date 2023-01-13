@@ -75,18 +75,38 @@ def book_sanitizer(book: Workbook):
     book[tracking_name].delete_rows(3,count-3)
     print("Book sanitized, ", count-3, " rows deleted")
 
-def load_data(path: str):
+""" def load_data(path: str):
     book = load_workbook(path, read_only= True, data_only= True)
     sheetTracking = book[tracking_name]
     num_balls = int((sheetTracking.max_column-1)/2)
 
     data = {}
+    print("Loading data...")
     for b in range(0, num_balls):
+        print(b+1, "/", num_balls)
         ball_x_column, ball_y_column = get_column_tuple_from_id(b+1)
         positions = []
         for i in range(3, sheetTracking.max_row+1):
             positions.append((sheetTracking[ball_x_column+f'{i}'].value,sheetTracking[ball_y_column+f'{i}'].value))
         data[b]=positions
+    
+    return data, num_balls """
+
+def load_data(path: str):
+    book = load_workbook(path, read_only= True)
+    sheetTracking = book[tracking_name]
+    num_balls = int((sheetTracking.max_column-1)/2)
+
+    data = {}
+    for b in range(num_balls):
+        data[b] = []
+
+    print("Loading data...")
+    for i in range(3, sheetTracking.max_row):
+        print(i-1,"/",sheetTracking.max_row-2)
+        row = sheetTracking[i]
+        for b in range(num_balls):
+            data[b].append((row[b*2+1].value, row[(b+1)*2].value))
     
     return data, num_balls
 

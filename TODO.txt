@@ -1,8 +1,11 @@
-Mirar el tracking de javivi
+Conseguir mantener la identidad de cada bola respecto a las detecciones en cada frame
+Crear una métrica para medir accuracy
 El denoiser no funciona bien, porque no tiene en cuenta las trayectorias. Habría que hacer que desde la columna calculara la trayectoria aproximada de la bola, desde ahí ver el resto de columnas que empiezan después y la primera celda de alguna otra columna cuadra con la trayectoria (teniendo en cuenta diferencia de frames) entonces es cuando se hace el append. Tal y como está ahora puede pillar coordenadas cercanas pero que no tengan sentido y mezcla bolas
 Terminar el denoise para que renombre las columnas ya puestos -> Queda ultima columna
 
 
+-10 Arreglar el visualizer
+-9 Mirar el tracking de javivi
 -8 Desde Stephen, mirar:
     - Ordenar los contornos por tamaño y cojer solo los x primeros (habría que valorar cuales Xs, igual simplemente pasar numero de bolas a mano)
     - Coger todos pero aplicar algo tipo supresión de no-máximos para quitar multiples detecciones sobre la misma bola
