@@ -90,6 +90,38 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
+def order_contours(contours, prev_contours):
+    ordered_contours = []
+    dist_matrix = np.zeros((len(contours),len(prev_contours)))
+
+    for idx,(prev_c,tag) in enumerate(prev_contours):
+        for jdx, curr_c in enumerate(contours):
+            prev_center = contour_center(prev_c)
+            curr_center = contour_center(curr_c)
+            curr_dist = np.linalg.norm(np.array(prev_center) - np.array(curr_center))
+            dist_matrix[jdx,idx] = curr_dist
+    
+    max_dist = dist_matrix.max()
+    used_tags = []
+    for i in range(min(dist_matrix.shape)):
+        min_value_index = np.unravel_index(dist_matrix.argmin(), dist_matrix.shape)
+        ordered_contours.insert(min_value_index[1], (contours[min_value_index[0]], min_value_index[1]))
+        used_tags.append(min_value_index[1])
+        dist_matrix[min_value_index[0],:] = max_dist+1
+        dist_matrix[:,min_value_index[1]] = max_dist+1
+
+    if(len(prev_contours)<len(contours)):
+        for i in range(len(contours)):
+            if i not in used_tags:
+                ordered_contours.insert(i, (contours[i], i))
+    elif(len(contours)<len(prev_contours)):
+        for i in range(len(prev_contours)):
+            if i not in used_tags:
+                ordered_contours.insert(i, (None, i))
+
+    return ordered_contours
+
+
 
 #finds the center of a contour
 #takes a single contour
@@ -101,7 +133,8 @@ def contour_center(c):
     return center
 
 # Create list to save data
-frame_number, positions = 0, []
+frame_number, prev_contours = 0, []
+contour_tag = 0
 
 book = eu.book_initializer(system,ss) #*edit*
 # Iterate though each frame of video
@@ -134,17 +167,26 @@ while True:
             positions.append(contour_center(c))
         except: pass """
         contours = contours_non_max_suppression(contours, non_max_suppresion_threshold)
-        for id, c in enumerate(contours):
-            # Draw the contours on the image
-            img = cv2.drawContours(img_copy, c ,-1, (0,0,255), 14)
-            # Add the data from the contour to the list
-            center = contour_center(c)
-            positions.append(center)
-            if center != (0,0):
-                eu.book_writer(book, frame_number+1, id, contour_center(c))
+        if len(prev_contours) == 0:
+            tagged_contours = []
+            for c in contours:
+                tagged_contours.append((c,contour_tag))
+                contour_tag+=1
+            prev_contours = tagged_contours
+        else:
+            tagged_contours = order_contours(contours, prev_contours)
+            prev_contours = tagged_contours
+        for id, (c,tag) in enumerate(tagged_contours):
+            if c is not None:
+                # Draw the contours on the image
+                img = cv2.drawContours(img_copy, c ,-1, (0,0,255), 14)
+                # Add the data from the contour to the list
+                center = contour_center(c)
+                if center != (0,0):
+                    eu.book_writer(book, frame_number+1, id, contour_center(c))
+            else:
+                eu.book_writer(book, frame_number+1, id, None)
 
-    # If no data point got added, add another one
-    if len(positions) < frame_number: positions.append((0,0))
     frame_number += 1
     #show the image and wait 1080x1920
     imS = cv2.resize(img_copy, (540, 960))
@@ -156,9 +198,6 @@ while True:
 #release the video to avoid memory leaks, and close the window
 cap.release()
 cv2.destroyAllWindows()
-
-#remove unused parts of the list
-positions = positions[:frame_number]
 
 print('finished tracking')
 #write data

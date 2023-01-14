@@ -53,7 +53,7 @@ while(cap.isOpened()):
         out.write(img)
         if visualize:
             cv2.imshow('img', img)
-            cv2.waitKey(1)
+            cv2.waitKey(0)
     else:
         break
     ret, img = cap.read()

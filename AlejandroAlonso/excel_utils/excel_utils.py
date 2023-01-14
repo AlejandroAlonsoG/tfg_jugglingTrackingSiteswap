@@ -58,8 +58,11 @@ def book_writer(book: Workbook, frame: int, id: int, coords: tuple[int, int]):
         sheetTracking[letter_2+'2'] = 'Y'
     # TODO Igual hacer que si no se ha detectado alguna bola se ponga un guion en la fila o algo asi?
     sheetTracking[f'A{frame+2}'] = frame
-    sheetTracking[letter_1+f'{frame+2}'] = coords[0]
-    sheetTracking[letter_2+f'{frame+2}'] = coords[1]
+    try:
+        sheetTracking[letter_1+f'{frame+2}'] = coords[0]
+        sheetTracking[letter_2+f'{frame+2}'] = coords[1]
+    except: # Caso de que las coordenadas sean None, no escribir nada
+        pass
 
 def book_saver(book: Workbook, system: str, ss:str, sanitize: bool = False):
     if sanitize:
