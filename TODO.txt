@@ -1,4 +1,10 @@
+-- PREDICCIÓN
+Ver información necesaria y diseñar algoritmo
+Ver formas menos manuales
+
+-- DETECCIÓN
 Crear una métrica para medir accuracy
+    - Si no están las identidades perfectas, ¿Que en cada frame haya en el radio de cada bola del groundtruth una detección?
 Conseguir mantener la identidad de cada bola respecto a las detecciones en cada frame
     - Igual se puede hacer una función que prediga las parábolas y desde ahí sacar si el contorno es el mismo
     - Otra forma sería hacer una especie de máscara con todas las predicciones, y ayudarte pra hacer la prediccion

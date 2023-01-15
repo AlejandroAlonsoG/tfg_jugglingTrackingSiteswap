@@ -1,0 +1,89 @@
+{"423": {
+    "numBolas": 3,
+    "periodo": 3,
+    "cambiosMano": [
+        [0,0,0],
+        [0,0,0],
+        [1,1,1]
+    ],
+    "ordenLanzamientos": [
+        1,2,3,2,1,3,1,2,3
+    ]
+  },
+  "441": {
+    "numBolas": 3,
+    "periodo": 3,
+    "cambiosMano": [
+        [0,0,1],
+        [0,1,0],
+        [1,0,0]
+    ],
+    "ordenLanzamientos": [
+        1,2,3,3,1,2,2,3,1
+    ]
+  },
+  "531": {
+    "numBolas": 3,
+    "periodo": 3,
+    "cambiosMano": [
+        [1,1,1],
+        [1,1,1],
+        [1,1,1]
+    ],
+    "ordenLanzamientos": [
+        1,2,3,3,2,1,1,2,3
+    ]
+  },
+  "633": {
+    "numBolas": 4,
+    "periodo": 3,
+    "cambiosMano": [
+        [0,0,0],
+        [1,1,1],
+        [1,1,1],
+        [0,0,0]
+    ],
+    "ordenLanzamientos": [
+        1,2,3,4,2,3,1,2,3,4,2,3
+    ]
+  },
+  "5551": {
+    "numBolas": 4,
+    "periodo": 4,
+    "cambiosMano": [
+        [1,1,1,1],
+        [1,1,1,1],
+        [1,1,1,1],
+        [1,1,1,1]
+    ],
+    "ordenLanzamientos": [
+        1,2,3,4,4,1,2,3,3,4,1,2,2,3,4,1
+    ]
+  },
+  "53": {
+    "numBolas": 4,
+    "periodo": 2,
+    "cambiosMano": [
+        [1,1],
+        [1,1],
+        [1,1],
+        [1,1]
+    ],
+    "ordenLanzamientos": [
+        1,2,3,4,1,2,3,4
+    ]
+  },
+  "534": {
+    "numBolas": 4,
+    "periodo": 3,
+    "cambiosMano": [
+        [1,0,1,0],
+        [1,1,1,1],
+        [0,1,0,1],
+        [1,0,1,0]
+    ],
+    "ordenLanzamientos": [
+        1,2,3,4,2,1,3,2,4,1,2,3
+    ]
+  }
+}
