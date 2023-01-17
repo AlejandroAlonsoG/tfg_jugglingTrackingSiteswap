@@ -1,6 +1,3 @@
--- PREDICCIÓN
-Ver información necesaria y diseñar algoritmo
-Ver formas menos manuales
 
 -- DETECCIÓN
 Crear una métrica para medir accuracy
@@ -8,10 +5,15 @@ Crear una métrica para medir accuracy
 Conseguir mantener la identidad de cada bola respecto a las detecciones en cada frame
     - Igual se puede hacer una función que prediga las parábolas y desde ahí sacar si el contorno es el mismo
     - Otra forma sería hacer una especie de máscara con todas las predicciones, y ayudarte pra hacer la prediccion
+Sacar desde las coordenadas dónde hay lanzamientos, y desde ahí su orden
 El denoiser no funciona bien, porque no tiene en cuenta las trayectorias. Habría que hacer que desde la columna calculara la trayectoria aproximada de la bola, desde ahí ver el resto de columnas que empiezan después y la primera celda de alguna otra columna cuadra con la trayectoria (teniendo en cuenta diferencia de frames) entonces es cuando se hace el append. Tal y como está ahora puede pillar coordenadas cercanas pero que no tengan sentido y mezcla bolas
 Terminar el denoise para que renombre las columnas ya puestos -> Queda ultima columna
 
+-- PREDICCIÓN
+Ver formas menos manuales
 
+-- TERMINADO
+-11 Ver información necesaria y diseñar algoritmo
 -10 Arreglar el visualizer
 -9 Mirar el tracking de javivi
 -8 Desde Stephen, mirar:
