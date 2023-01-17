@@ -21,5 +21,5 @@ ss_list = [(3,[1,2,3,2,1,3,1,2,3],'423'),
         (3,[1,2,3,4,2,1,3,2,4,1,2,3],'534')]
 
 for period, throw_order, ss in ss_list:
-    #print(ss, "=>" ,pred.prediction(period, throw_order))
-    assert(ss == pred.prediction(period, throw_order))
+    print(ss, "=>" ,pred.prediction(throw_order))
+    assert(ss == pred.prediction(throw_order))

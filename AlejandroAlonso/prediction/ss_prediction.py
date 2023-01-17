@@ -1,15 +1,49 @@
 import itertools
 
-def prediction(period: int, throw_order: list()) -> str:
+# https://stackoverflow.com/a/46799141
+#Where max_period is the maximun period you want to look for, 
+# and test_numb is how many numbers of the sequence you want to test, the bigger the better but you have to make max_period+test_numb < len(sequence)
+def get_min_period(sequence,max_period,test_numb):
+    seq_len = len(sequence)
+    for i in range(1,seq_len):       
+        for j in range(1,max_period+1):
+            found =True
+            for con in range(test_numb):                                        
+                if not (sequence[-i-con]==sequence[-i-j-con]):
+                    found = False
+                    break
+            if found:           
+                minT=j
+                return minT
+
+
+def prediction(throw_order: list(), test_numbers=10) -> str:
     ss = ''
-    i=1
-    while len(ss)<period:
+    for i in range(len(throw_order)):
         #list.index(element, start, end), busca la bola i a partir del indice i (la primera aparicion deberia estar en i-1)
-        next_throw = throw_order.index(i, i)
-        ss += str(next_throw-(i-1))
+        try:
+            next_throw = throw_order.index(throw_order[i], i+1)
+        except:
+            break
+        ss += str(next_throw-i)
         i+=1
 
-    return ss
+    # El periodo maximo es la longitud entre 2 porque el ss se tiene que repetir al menos 2 veces
+    max_period = (len(ss)//2)
+    # El numero de comprobaciones es el recibido por parametro o el mas grande posible
+    if len(ss) <= max_period+test_numbers:
+        test_numbers = len(ss)-max_period
+
+    period = get_min_period(ss, max_period, test_numbers)
+
+    # Comprueba la primera secuencia correcta de longitud=periodo y la devuelve como ss
+    for i in range(len(ss)-period):
+        sum_values = 0
+        for j in range(period):
+            sum_values += int(ss[i+j])
+        if ss_validity_checker(ss[i:i+period],sum_values/period) == True:
+            return ss[i:i+period]
+    return None
 
 def ss_validity_checker(ss: str, numBalls: int) -> bool:
     # La media del ss es el numero de bolas
