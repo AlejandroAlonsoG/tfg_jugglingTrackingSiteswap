@@ -1,0 +1,5 @@
+Vale con el orden de lanzamientos y ver cuando se repite
+
+Como una persona seria tener en cuenta los cambios de mano y las alturas relativas y desde ahí ver cuando se repite
+
+Ahora mismo se le pasa el periodo, igual es dificil de detectar. Lo suyo probablemente sería sacar una secuencia larga de predicción y sacar su periodo. Seguramente la secuencia entera no sea perfecta, por lo que haya que permitir errores a la hora de sacar un periodo
