@@ -1,4 +1,3 @@
-
 -- DETECCIÓN
 Crear una métrica para medir accuracy
     - Si no están las identidades perfectas, ¿Que en cada frame haya en el radio de cada bola del groundtruth una detección?
