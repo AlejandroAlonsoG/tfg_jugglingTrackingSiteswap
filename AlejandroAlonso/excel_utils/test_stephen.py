@@ -22,29 +22,25 @@ non_max_suppresion_threshold=50
 
 # Takes image and color, returns parts of image that are that color
 def only_color(frame, hsv_range):
-    (b,r,g,b1,r1,g1) = hsv_range
+    (h,s,v,h1,s1,v1) = hsv_range
     # Convert BGR to HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     # define range of blue color in HSV
-    lower = np.array([b,r,g])
-    upper = np.array([b1,r1,g1])
+    lower = np.array([h,s,v])
+    upper = np.array([h1,s1,v1])
     # Threshold the HSV image to get only blue colors
     mask = cv2.inRange(hsv, lower, upper)
     # Bitwise-AND mask and original image
     res = cv2.bitwise_and(frame,frame, mask= mask)
     return res, mask
 
-#finds the largest contour in a list of contours
-#returns a single contour
-def largest_contour(contours):
-    c = max(contours, key=cv2.contourArea)
-    return c[0]
-
 #takes an image and the threshold value returns the contours
 def get_contours(im, threshold_value):
     imgray = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
+    # cv2.threshold(src, threshold value, maximum value, type (0 binario creo))
     _ ,thresh = cv2.threshold(imgray,0,255,0)
     contours, _ = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    #contours, _ = cv2.findContours(imgray,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     return contours
 
 def contours_non_max_suppression(contours, threshold_value, use_distance=True):
@@ -82,7 +78,6 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
                     union = area1 + area2 - intersection
                     # Si la interseccion es suficientemente grande la marco como overlap
                     overlap=intersection/union
-                    print(overlap)
                     if overlap > threshold_value:
                         overlaps.add(j)
         
@@ -143,7 +138,6 @@ while True:
     # Read image from the video
     _, img = cap.read()
     
-
     # Chech if the video is over
     try: l = img.shape
     except: break
@@ -158,14 +152,6 @@ while True:
 
     # If there are contours found in the image:
     if len(contours)>0:
-        """ try:
-            # Sort the contours by area
-            c = max(contours, key=cv2.contourArea)
-            # Draw the contours on the image
-            img = cv2.drawContours(img_copy, c ,-1, (0,0,255), 14)
-            # Add the data from the contour to the list
-            positions.append(contour_center(c))
-        except: pass """
         contours = contours_non_max_suppression(contours, non_max_suppresion_threshold)
         if len(prev_contours) == 0:
             tagged_contours = []
@@ -199,17 +185,7 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 
-print('finished tracking')
-#write data
-""" import csv
-with open(output_path, 'w') as csvfile:
-    fieldnames = ['x_position', 'y_position']
-    writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
-    writer.writeheader()
-    for position in positions:
-        x, y = position[0], position[1]
-        writer.writerow({'x_position': x, 'y_position': y}) """
-        
+print('finished tracking')        
 
 eu.book_saver(book,system,ss, sanitize=False)  #*edit*
 
