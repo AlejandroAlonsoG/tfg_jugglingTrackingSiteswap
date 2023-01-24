@@ -127,12 +127,6 @@ while ret:
     cv2.imshow(window_label, image)
 
     key = cv2.waitKey(frame_delay)
-    if key == 27:
-        break
-    elif key == ord(' '):
-        frame_delay = toggle[frame_delay]
-    elif key == ord('f'):
-        frame_delay = 0
 
     ret, frame = cap.read()
     current_frame += 1
