@@ -3,8 +3,14 @@ import cv2, numpy as np
 import prediction.kalman_prediction_utils as kpu
 import sys
 import excel_utils_debugging as eu
-system = "StephenMeschke"
-ss = "ss5"
+
+#source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4'
+source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
+#source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
+
+system = "ColorTracking"
+
+ss=(source_path.split('/')[-1]).split('.')[0]
 
 # H,S,V range of the object to be tracked
 
@@ -15,11 +21,10 @@ h,s,v,h1,s1,v1 = 35,30,150,185,120,255 #RED_Alex
 #h,s,v,h1,s1,v1 = 156,74,76,166,255,255 #pink
 #h,s,v,h1,s1,v1 = 27,0,0,82,190,255 #GREEN
 
-# Define the source path
-#cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4')
-cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4')
+cap = cv2.VideoCapture(source_path)
 
-non_max_suppresion_threshold=50
+non_max_suppresion_threshold=100
+visualize=False
 
 # Takes image and color, returns parts of image that are that color
 def only_color(frame, hsv_range):
@@ -133,6 +138,8 @@ frame_number, prev_contours = 0, []
 contour_tag = 0
 ids = {}
 book = eu.book_initializer(system,ss) #*edit*
+if visualize:
+    cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 # Iterate though each frame of video
 while True:
     
@@ -143,7 +150,8 @@ while True:
     try: l = img.shape
     except: break
 
-    img_copy = img.copy()
+    if visualize:
+        img_copy = img.copy()
     
     # Segment the image by color
     img, mask = only_color(img, (h,s,v,h1,s1,v1))
@@ -172,23 +180,25 @@ while True:
             coord = elem["Coord"]
 
             if coord != elem["Prediction"]:
-                eu.book_writer(book, frame_number+1, key, coord)
-                if coord is not None:
+                eu.book_writer(book, frame_number+1, key+1, coord)
+                if coord is not None and visualize:
                     x1, y1 = elem["Coord"]
                     cv2.rectangle(img_copy, (int(x1 - 15), int(y1 - 15)), (int(x1 + 15), int(y1 + 15)), (0, 0, 255), 2)
                     cv2.putText(img_copy, "Id {}".format(key), (int(x1 + 15), int(y1 + 10)), 0, 0.5, (0, 0, 255), 2)
 
     frame_number += 1
     #show the image and wait 1080x1920
-    imS = cv2.resize(img_copy, (540, 960))
-    cv2.imshow('img', imS)
-    #cv2.imshow('img', cv2.resize(img, (480,700)))
-    k=cv2.waitKey(1)
-    if k==27: break
+    #imS = cv2.resize(img_copy, (540, 960))
+    if visualize:
+        cv2.imshow('img', img_copy)
+        #cv2.imshow('img', cv2.resize(img, (480,700)))
+        k=cv2.waitKey(1)
+        if k==27: break
     
 #release the video to avoid memory leaks, and close the window
-cap.release()
-cv2.destroyAllWindows()
+if visualize:
+    cap.release()
+    cv2.destroyAllWindows()
 
 print('finished tracking')        
 
