@@ -1,122 +1,51 @@
-import cv2
 import numpy as np
-from matplotlib import pyplot as plt
+import cv2
 
+import colorsys 
+ 
+def HSVToRGB(h, s, v): 
+ (r, g, b) = colorsys.hsv_to_rgb(h, s, v) 
+ return (int(255*r), int(255*g), int(255*b)) 
+ 
+def getDistinctColors(id, num_balls):
+    h = (int(360/num_balls * id))
+    r, g, b = cv2.cvtColor(np.uint8([[[h / 2, 255, 255]]]), cv2.COLOR_HSV2BGR)[0][0]
+    return (int(r), int(g), int(b))
 
-def contour_center(c):
-    M = cv2.moments(c)
-    try: center = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
-    except: center = 0,0
-    return center
+def get_color(id, num_balls):
+    # 255*3 porque hace todas las combinaciones en rgb, /numballs y * id para coger los valores más separados entre ids
+    value = (255*3)/(num_balls-1) * id
+    # Devuelve el código rgb correspondiente a ese color
 
-def contours_non_max_suppression(contours, threshold_value, use_distance=True):
-    contours = sorted(contours, key=cv2.contourArea, reverse=True)
-
-    overlaps = set()
-
-    # Usa el threshold como una distancia, entonces elimina las regiones mas pequeñas que esten demasiado cerca
-    if use_distance:
-        for i in range(len(contours)):
-            for j in range(i+1, len(contours)):
-                point1 = contour_center(contours[i])
-                point2 = contour_center(contours[j])
-                dist = np.linalg.norm(np.array(point1) - np.array(point2))
-                if dist < threshold_value:
-                    overlaps.add(j)
-    # Usa el threshold para comprobar la interseccion, de forma que elimina regiones superpuestas en demasiada medida
+    if value%255 == 0 and value != 0:
+        take = 255
     else:
-        for i in range(len(contours)):
-            for j in range(i+1, len(contours)):
-                # Saco rectangulos que definen cada contorno
-                (x1,y1,w1,h1) = cv2.boundingRect(contours[i])
-                (x2,y2,w2,h2) = cv2.boundingRect(contours[j])
-                a = (x1, y1)
-                b = (x1+w1, y1+h1)
-                c = (x2, y2)
-                d = (x2+w2, y2+h2)
-                width = min(b[0], d[0]) - max(a[0], c[0])
-                height = min(b[1], d[1]) - max(a[1], c[1])
-                # Si hay alguna interseccion
-                if min(width,height) > 0:
-                    intersection = width*height
-                    area1 = (b[0]-a[0])*(b[1]-a[1])
-                    area2 = (d[0]-c[0])*(d[1]-c[1])
-                    union = area1 + area2 - intersection
-                    # Si la interseccion es suficientemente grande la marco como overlap
-                    overlap=intersection/union
-                    if overlap > threshold_value:
-                        overlaps.add(j)
-        
-    contours = [x for i, x in enumerate(contours) if i not in overlaps]
+        take = 0
 
-    return contours
+    if value > 255*2:
+        return (255, 255, int(value%255) + take)
+    elif value > 255:
+        return (255, int(value%255) + take, 0)
+    else:
+        return (int(value%255) + take, 0, 0)
 
-img = cv2.imread('../../dataset/tests/frame.png')
+colors = []
+for i in range(0, 5):
+    colors.append(getDistinctColors(i, 5))
 
-RGBimage = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+print(colors)
 
-h,s,v,h1,s1,v1 = 35,30,150,185,120,255
+cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+height, width = 1920, 1080
+img = np.zeros((height, width, 3), np.uint8)
+img[:, :] = [255, 255, 255]
 
+for i in range (0,5):
+    #cv2.circle(img, (int(1920/2),int((1080/5)*i)), 10, colors[i], 2)
+    x,y = (540,int((1920/5)*i)+int(1920/10))
+    cv2.circle(img, (x,y), 50, colors[i], -1)
+    cv2.putText(img, str(colors[i]), (x+50, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
 
-hsv = cv2.cvtColor(RGBimage, cv2.COLOR_BGR2HSV)
-# define range of blue color in HSV
-lower = np.array([h,s,v])
-upper = np.array([h1,s1,v1])
-# Threshold the HSV image to get only blue colors
-mask = cv2.inRange(hsv, lower, upper)
-# Bitwise-AND mask and original image
-res = cv2.bitwise_and(RGBimage,RGBimage, mask= mask)
-
-
-imgray = cv2.cvtColor(res,cv2.COLOR_BGR2GRAY)
-_ ,thresh = cv2.threshold(imgray,0,255,0)
-contours, _ = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-square_len=50
-img_copy = img.copy()
-for c in contours:
-    coords_x,coords_y = contour_center(c)
-    start_point = (coords_x-square_len//2, coords_y-square_len//2)
-    end_point = (coords_x+square_len//2, coords_y+square_len//2)
-    cv2.rectangle(img_copy, start_point, end_point, (0, 0, 255), 2)
-
-non_max_suppresion_threshold=50
-img_copy2 = img.copy()
-contours2 = contours_non_max_suppression(contours,non_max_suppresion_threshold)
-for c in contours2:
-    coords_x,coords_y = contour_center(c)
-    start_point = (coords_x-square_len//2, coords_y-square_len//2)
-    end_point = (coords_x+square_len//2, coords_y+square_len//2)
-    cv2.rectangle(img_copy2, start_point, end_point, (0, 0, 255), 2)
-
-fig, ax = plt.subplots(nrows=2, ncols=3)
-fig.tight_layout()
-
-ax[0][0].imshow(RGBimage)
-ax[0][0].set_title("Frame inicial")
-
-ax[0][1].imshow(hsv)
-ax[0][1].set_title("Frame hsv")
-
-ax[0][2].imshow(mask, cmap='gray')
-ax[0][2].set_title("Máscara del only_color")
-
-ax[1][0].imshow(res)
-ax[1][0].set_title("Resultado only_color")
-
-ax[1][1].imshow(imgray, cmap='gray')
-ax[1][1].set_title("Resultado only_color gris")
-
-ax[1][2].imshow(thresh, cmap='gray')
-ax[1][2].set_title("Resultado only_color tras threshold,\n antes de sacar contornos")
-
-fig, ax = plt.subplots(nrows=1, ncols=2)
-fig.tight_layout()
-ax[0].imshow(img_copy)
-ax[0].set_title("Resultado contornos")
-
-ax[1].imshow(img_copy2)
-ax[1].set_title("Resultado contornos supresion overlaps")
-
-
-plt.show()
+cv2.imshow('img', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
