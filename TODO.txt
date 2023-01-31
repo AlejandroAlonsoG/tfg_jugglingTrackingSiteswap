@@ -1,17 +1,34 @@
 -- DETECCIÓN
-Crear una métrica para medir accuracy
+Crear un módulo de postprocesado de vídeo
+    - Eliminar ruido
+        - Estático
+        - Dinámico
+    - Comprobar si distintos ids corresponden a la misma bola y juntarlos en caso afirmativo, reestablecer todos los ids después
+    - Rellenar huecos por detecciones perdidas
+Crear un módulo de preprocesado de vídeo
+    - Modifica la imagen para obtener mejores resultados -> Cambiando saturación, blurr ...
+    - Aplica bartonski y saca el color de cada detección, los guarda en un histograma y automatiza indicar el color de las pelotas
+Obtener una métrica para medir accuracy
     - Si no están las identidades perfectas, ¿Que en cada frame haya en el radio de cada bola del groundtruth una detección?
-Conseguir mantener la identidad de cada bola respecto a las detecciones en cada frame
-    - Igual se puede hacer una función que prediga las parábolas y desde ahí sacar si el contorno es el mismo
-    - Otra forma sería hacer una especie de máscara con todas las predicciones, y ayudarte pra hacer la prediccion
-Sacar desde las coordenadas dónde hay lanzamientos, y desde ahí su orden
+    - Ver cómo funcionan los valores en los parámetros
+    - Hacer un programa de prueba (óptimo) para lanzar ejecuciones y ver resultados
+Explorar otras formas de detección (bartonski, ML/DL, ensembles...)
 El denoiser no funciona bien, porque no tiene en cuenta las trayectorias. Habría que hacer que desde la columna calculara la trayectoria aproximada de la bola, desde ahí ver el resto de columnas que empiezan después y la primera celda de alguna otra columna cuadra con la trayectoria (teniendo en cuenta diferencia de frames) entonces es cuando se hace el append. Tal y como está ahora puede pillar coordenadas cercanas pero que no tengan sentido y mezcla bolas
 Terminar el denoise para que renombre las columnas ya puestos -> Queda ultima columna
 
 -- PREDICCIÓN
-Ver formas menos manuales
+Hacer un módulo de análisis de resultados encargado de sacar desde las coordenadas dónde hay lanzamientos, y desde ahí su orden
+Ver formas menos manuales de sacar el siteswap
+
+-- OTROS
+Ver si con Pickle se pueden guardar los ids (O solo sus coordenadas o algo asi) y usar el visualizer desde ahi, seguramente sea mas rápido
 
 -- TERMINADO
+-14 Hacer que el visualizer muestre al lado las trayectorias hasta el momento
+-13 Hacer que el visualizer use distintos colores para cada bola
+-12 Conseguir mantener la identidad de cada bola respecto a las detecciones en cada frame
+    - Igual se puede hacer una función que prediga las parábolas y desde ahí sacar si el contorno es el mismo
+    - Otra forma sería hacer una especie de máscara con todas las predicciones, y ayudarte pra hacer la prediccion
 -11 Ver información necesaria y diseñar algoritmo
 -10 Arreglar el visualizer
 -9 Mirar el tracking de javivi
