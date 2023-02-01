@@ -1,7 +1,32 @@
 # Import libraries
 import cv2, numpy as np
 import prediction.kalman_prediction_utils as kpu
+import sys
 import excel_utils_debugging as eu
+
+#source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4'
+#source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
+source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
+
+system = "ColorTracking"
+
+ss=(source_path.split('/')[-1]).split('.')[0]
+
+# H,S,V range of the object to be tracked
+
+#h,s,v,h1,s1,v1 = 150,77,70,255,255,255 #RED
+#h,s,v,h1,s1,v1 = 35,30,150,185,120,255 #RED_Alex
+#h,s,v,h1,s1,v1 = 172,37,249,174,63,253 #RED_Auto
+h,s,v,h1,s1,v1 = 173,49,249,174,55,253 #RED_Auto2
+
+# Find these values using hsv_color_picker.py
+#h,s,v,h1,s1,v1 = 156,74,76,166,255,255 #pink
+#h,s,v,h1,s1,v1 = 27,0,0,82,190,255 #GREEN
+
+cap = cv2.VideoCapture(source_path)
+
+non_max_suppresion_threshold=100
+visualize=True
 
 # Takes image and color, returns parts of image that are that color
 def only_color(frame, hsv_range):
@@ -18,22 +43,13 @@ def only_color(frame, hsv_range):
     return res, mask
 
 #takes an image and the threshold value returns the contours
-def get_contours(im):
+def get_contours(im, threshold_value):
     imgray = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
     # cv2.threshold(src, threshold value, maximum value, type (0 binario creo))
     _ ,thresh = cv2.threshold(imgray,0,255,0)
     contours, _ = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     #contours, _ = cv2.findContours(imgray,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     return contours
-
-#finds the center of a contour
-#takes a single contour
-#returns (x,y) position of the contour
-def contour_center(c):
-    M = cv2.moments(c)
-    try: center = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
-    except: center = 0,0
-    return center
 
 def contours_non_max_suppression(contours, threshold_value, use_distance=True):
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
@@ -108,83 +124,87 @@ def order_contours(contours, prev_contours):
 
     return ordered_contours
 
-def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, visualize=False):
-    system = "ColorTracking"
-    ss=(source_path.split('/')[-1]).split('.')[0]
 
-    h,s,v,h1,s1,v1 = hsv_range
-    cap = cv2.VideoCapture(source_path)
-    # Create list to save data
-    frame_number= 0
-    ids = {}
-    book = eu.book_initializer(system,ss) #*edit*
+
+#finds the center of a contour
+#takes a single contour
+#returns (x,y) position of the contour
+def contour_center(c):
+    M = cv2.moments(c)
+    try: center = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
+    except: center = 0,0
+    return center
+
+# Create list to save data
+frame_number, prev_contours = 0, []
+contour_tag = 0
+ids = {}
+book = eu.book_initializer(system,ss) #*edit*
+if visualize:
+    cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+# Iterate though each frame of video
+while True:
+    
+    # Read image from the video
+    _, img = cap.read()
+    
+    # Chech if the video is over
+    try: l = img.shape
+    except: break
+
     if visualize:
-        cv2.namedWindow('img', cv2.WINDOW_NORMAL)
-    # Iterate though each frame of video
-    while True:
-        
-        # Read image from the video
-        _, img = cap.read()
-        
-        # Chech if the video is over
-        try: l = img.shape
-        except: break
+        img_copy = img.copy()
+    
+    # Segment the image by color
+    img, mask = only_color(img, (h,s,v,h1,s1,v1))
 
-        if visualize:
-            img_copy = img.copy()
-        
-        # Segment the image by color
-        img, _ = only_color(img, (h,s,v,h1,s1,v1))
+    # Find the contours in the image
+    contours = get_contours(img, 0)
 
-        # Find the contours in the image
-        contours = get_contours(img)
+    # If there are contours found in the image:
+    if len(contours)>0:
+        contours = contours_non_max_suppression(contours, non_max_suppresion_threshold)
+        # Saca los centros de los contornos para trabajar con ellos
+        contours = [contour_center(c) for c in contours if contour_center(c) != (0,0)]
+        if len(ids) == 0:
+            # Creo los ids de cada contorno
+            for c in contours:
+                new_id_dict = kpu.init_id_dict(c)
+                ids[len(ids)] = new_id_dict
+        else:
+            # Actualizo los ids que tengo con las detecciones nuevas
+            if len(contours) > 0:
+                kpu.update_ids(ids, contours)
+            # En caso de haber perdido alguna detección, la actualizo con su predicción
+            kpu.update_lost_detections(ids)
 
-        # If there are contours found in the image:
-        if len(contours)>0:
-            contours = contours_non_max_suppression(contours, non_max_suppresion_threshold)
-            # Saca los centros de los contornos para trabajar con ellos
-            contours = [contour_center(c) for c in contours if contour_center(c) != (0,0)]
-            if len(ids) == 0:
-                # Creo los ids de cada contorno
-                for c in contours:
-                    new_id_dict = kpu.init_id_dict(c)
-                    ids[len(ids)] = new_id_dict
-            else:
-                # Actualizo los ids que tengo con las detecciones nuevas
-                if len(contours) > 0:
-                    kpu.update_ids(ids, contours)
-                # En caso de haber perdido alguna detección, la actualizo con su predicción
-                kpu.update_lost_detections(ids)
+        for key in ids:
+            elem = ids[key]
+            coord = elem["Coord"]
 
-            for key in ids:
-                elem = ids[key]
-                coord = elem["Coord"]
+            if coord != elem["Prediction"]:
+                eu.book_writer(book, frame_number+1, key+1, coord)
+                if coord is not None and visualize:
+                    x1, y1 = elem["Coord"]
+                    cv2.rectangle(img_copy, (int(x1 - 15), int(y1 - 15)), (int(x1 + 15), int(y1 + 15)), (0, 0, 255), 2)
+                    cv2.putText(img_copy, "Id {}".format(key), (int(x1 + 15), int(y1 + 10)), 0, 0.5, (0, 0, 255), 2)
 
-                if coord != elem["Prediction"]:
-                    eu.book_writer(book, frame_number+1, key+1, coord)
-                    if coord is not None and visualize:
-                        x1, y1 = elem["Coord"]
-                        cv2.rectangle(img_copy, (int(x1 - 15), int(y1 - 15)), (int(x1 + 15), int(y1 + 15)), (0, 0, 255), 2)
-                        cv2.putText(img_copy, "Id {}".format(key), (int(x1 + 15), int(y1 + 10)), 0, 0.5, (0, 0, 255), 2)
-
-        frame_number += 1
-        #show the image and wait 1080x1920
-        #imS = cv2.resize(img_copy, (540, 960))
-        if visualize:
-            cv2.imshow('img', img_copy)
-            #cv2.imshow('img', cv2.resize(img, (480,700)))
-            k=cv2.waitKey(1)
-            if k==27: break
-        
-    #release the video to avoid memory leaks, and close the window
+    frame_number += 1
+    #show the image and wait 1080x1920
+    #imS = cv2.resize(img_copy, (540, 960))
     if visualize:
-        cap.release()
-        cv2.destroyAllWindows()
+        cv2.imshow('img', img_copy)
+        #cv2.imshow('img', cv2.resize(img, (480,700)))
+        k=cv2.waitKey(1)
+        if k==27: break
+    
+#release the video to avoid memory leaks, and close the window
+if visualize:
+    cap.release()
+    cv2.destroyAllWindows()
 
-    print('finished tracking')        
+print('finished tracking')        
 
-    eu.book_saver(book,system,ss, sanitize=False)  #*edit*
+eu.book_saver(book,system,ss, sanitize=False)  #*edit*
 
-    print('finished writing data')
-
-    return len(ids)
+print('finished writing data')
