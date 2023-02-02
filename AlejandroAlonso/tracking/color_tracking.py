@@ -185,6 +185,6 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
 
     eu.book_saver(book,system,ss, sanitize=False)  #*edit*
 
-    print('finished writing data')
+    print('finished writing data with name' + f'.../tracking_{ss}_{system}.xlsx')
 
     return len(ids)

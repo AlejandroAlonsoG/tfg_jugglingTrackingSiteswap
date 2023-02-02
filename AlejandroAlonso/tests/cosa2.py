@@ -1,16 +1,21 @@
 import cv2
 import numpy as np
+import random
 
-img = cv2.imread('/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/frame.png') 
+elems = {}
+for i in range (0,1000):
+    elem = (random.randint(0,2),random.randint(0,2),random.randint(0,2))
+    if elem in elems:
+        elems[elem] += 1
+    else:
+        elems[elem] = 1
 
-""" padding = np.zeros((img.shape[1]))
-padding[:] = [255, 255, 255]
+""" histogram, _ = np.histogram(list, bins=256, range=(0, 256))
 
-img[:,] + padding """
+print(histogram) """
 
-img = cv2.copyMakeBorder(img, 0, 0, 0, img.shape[1], cv2.BORDER_CONSTANT, None, value = 0)
+ordered_dict = sorted(elems.items(), key=lambda item: item[1])
 
-cv2.namedWindow('img', cv2.WINDOW_NORMAL)
-cv2.imshow('img',img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+print(ordered_dict)
+
+print(max(elems, key=elems.get))
