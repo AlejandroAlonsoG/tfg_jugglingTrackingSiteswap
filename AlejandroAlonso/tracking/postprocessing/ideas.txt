@@ -1,0 +1,25 @@
+- Eliminar ruido
+
+    Habría que hacer algo que uniera detecciones por ids (o sin unirlas por ids) pero que saque como una especie de mapa de calor de la zona por donde hay detecciones
+    Lo que en el caso de una cascada tendría forma de infinito por ejemplo, cualquier detección que se salga de esa zona es muy probable que sea ruido
+
+    - Estático
+
+        Si hay X coordenadas seguidas que no se mueven será ruido estático. Mas aún si están fuera de la zona de mayor presencia de detecciones
+
+    - Dinámico
+
+        Detecciones que están fuera de la zona de mayor presencia de detecciones
+
+
+- Comprobar si distintos ids corresponden a la misma bola y juntarlos en caso afirmativo, reestablecer todos los ids después
+
+    Hace falta algo de predicción tipo Kalman pero que tenga en cuenta movimientos periódicos, de forma que si una bola va haciendo una forma, y la pierdes, sea capaz de
+    tener en cuenta que va a repetir el movimiento con una velocidad y aceleración similares cada vez. Con ello, desde el final de una columna de detecciones si termina 
+    antes de lo que termina el vídeo, comprobar el resto de columnas que empiezan después de que termine y ver si en ese frame suponiendo que la bola siga manteniendo
+    el movimiento periódico tendría sentido que estuviera en esa posición. En caso afirmativo meter la segunda columna debajo de la primera
+
+- Rellenar huecos por detecciones perdidas
+
+    Aquí hace falta algo de predicción que tenga en cuenta posiciones futuras y posiciones pasadas para rellenar lo del medio. Podría ayudar también lo de tener en cuenta
+    que es periódico, porque si ya ha estado en las posiciones pasadas y futuras y hay detecciones de lo del medio sabes que va a hacer exactamente lo mismo

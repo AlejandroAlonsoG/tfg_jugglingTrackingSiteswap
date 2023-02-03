@@ -1,21 +1,36 @@
-import cv2
 import numpy as np
-import random
+import cv2
 
-elems = {}
-for i in range (0,1000):
-    elem = (random.randint(0,2),random.randint(0,2),random.randint(0,2))
-    if elem in elems:
-        elems[elem] += 1
-    else:
-        elems[elem] = 1
+cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4')
 
-""" histogram, _ = np.histogram(list, bins=256, range=(0, 256))
+kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 
-print(histogram) """
+# initializing subtractor
+fgbg = cv2.bgsegm.createBackgroundSubtractorGMG()
 
-ordered_dict = sorted(elems.items(), key=lambda item: item[1])
+object_detector = cv2.createBackgroundSubtractorMOG2(
+                        history=100,
+                        varThreshold=10)
 
-print(ordered_dict)
+cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+cv2.namedWindow('img2', cv2.WINDOW_NORMAL)
 
-print(max(elems, key=elems.get))
+while(1):
+	ret, frame = cap.read()
+
+	# applying on each frame
+	fgmask = fgbg.apply(frame)
+	fgmask2 = object_detector.apply(frame)
+
+	fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, kernel)	
+
+	cv2.imshow('img', fgmask)
+	k = cv2.waitKey(1)
+	if k == 27:
+		break
+
+	cv2.imshow('img2', fgmask2)
+
+
+cap.release()
+cv2.destroyAllWindows()

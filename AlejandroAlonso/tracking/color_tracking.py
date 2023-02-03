@@ -77,37 +77,6 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def order_contours(contours, prev_contours):
-    ordered_contours = []
-    dist_matrix = np.zeros((len(contours),len(prev_contours)))
-
-    for idx,(prev_c,tag) in enumerate(prev_contours):
-        for jdx, curr_c in enumerate(contours):
-            prev_center = contour_center(prev_c)
-            curr_center = contour_center(curr_c)
-            curr_dist = np.linalg.norm(np.array(prev_center) - np.array(curr_center))
-            dist_matrix[jdx,idx] = curr_dist
-    
-    max_dist = dist_matrix.max()
-    used_tags = []
-    for i in range(min(dist_matrix.shape)):
-        min_value_index = np.unravel_index(dist_matrix.argmin(), dist_matrix.shape)
-        ordered_contours.insert(min_value_index[1], (contours[min_value_index[0]], min_value_index[1]))
-        used_tags.append(min_value_index[1])
-        dist_matrix[min_value_index[0],:] = max_dist+1
-        dist_matrix[:,min_value_index[1]] = max_dist+1
-
-    if(len(prev_contours)<len(contours)):
-        for i in range(len(contours)):
-            if i not in used_tags:
-                ordered_contours.insert(i, (contours[i], i))
-    elif(len(contours)<len(prev_contours)):
-        for i in range(len(prev_contours)):
-            if i not in used_tags:
-                ordered_contours.insert(i, (None, i))
-
-    return ordered_contours
-
 def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, visualize=False):
     system = "ColorTracking"
     ss=(source_path.split('/')[-1]).split('.')[0]
@@ -182,9 +151,7 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
         cv2.destroyAllWindows()
 
     print('finished tracking')        
-
     eu.book_saver(book,system,ss, sanitize=False)  #*edit*
-
     print('finished writing data with name' + f'.../tracking_{ss}_{system}.xlsx')
 
     return len(ids)

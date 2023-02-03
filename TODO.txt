@@ -23,7 +23,7 @@ Ver formas menos manuales de sacar el siteswap
 Ver si con Pickle se pueden guardar los ids (O solo sus coordenadas o algo asi) y usar el visualizer desde ahi, seguramente sea mas rápido
 
 -- TERMINADO
-- Mejorar preprocesado
+-16 Mejorar preprocesado
     - Sacar color automáticamente funciona relativamente bien
 -15 Crear un módulo de preprocesado de vídeo
     - Aplica bartonski y saca el color de cada detección, los guarda en un histograma y automatiza indicar el color de las pelotas
