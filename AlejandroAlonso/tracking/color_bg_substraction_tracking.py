@@ -36,6 +36,7 @@ def contour_center(c):
     return center
 
 def contours_non_max_suppression(contours, threshold_value, use_distance=True):
+    # Permite tener a partir de este momento los contornos ordenados por tamaño TODO ver si hay cambios significativos al quitarlo
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
     overlaps = set()
@@ -77,12 +78,17 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, visualize=False):
-    system = "ColorTracking"
+def color_bg_substraction_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, min_contour_area=1000, enclosing_area_diff=0.5, visualize=False):
+    system = "ColorBgSubstractionTracking"
     ss=(source_path.split('/')[-1]).split('.')[0]
 
     h,s,v,h1,s1,v1 = hsv_range
     cap = cv2.VideoCapture(source_path)
+
+    object_detector = cv2.createBackgroundSubtractorMOG2(
+                        history=100,
+                        varThreshold=10)
+
     # Create list to save data
     frame_number= 0
     ids = {}
@@ -96,17 +102,43 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
         _, img = cap.read()
         
         # Chech if the video is over
-        try: l = img.shape
+        try: _ = img.shape
         except: break
 
         if visualize:
             img_copy = img.copy()
         
-        # Segment the image by color
+        # Tracking BgSubstraction
+        mask = object_detector.apply(img)
+        _, mask = cv2.threshold( mask, 254, 255, # Se pasa la máscara por un threshold de grises
+                                    cv2.THRESH_BINARY )
+        contours_bg, _ = cv2.findContours( mask, # Desde el resultado de esa máscara se sacan los contornos
+                                        cv2.RETR_TREE,
+                                        cv2.CHAIN_APPROX_SIMPLE )
+
+
+        circle_contours = []
+        for c in contours_bg:
+            area = cv2.contourArea(c)
+            # Se comprueba que tenga cierto tamaño de area, y luego que, o bien el minimo circulo que se le pueda hacer al contorno alrededor tenga un area parecida,
+            # o bien que la forma geometrica mas parecida al contorno tenga al menos 4 lados y sea convexo
+            # Es decir, se intenta detectar una forma circular con cierta area
+            if area > min_contour_area:
+                _, radius = cv2.minEnclosingCircle(c)
+                enclosing_area = np.pi * radius * radius
+                approx = cv2.approxPolyDP(c,0.1*cv2.arcLength(c,True),True)
+                if (len(approx)>3 and cv2.isContourConvex(approx)) or abs(area - enclosing_area) < enclosing_area_diff * enclosing_area:
+                    circle_contours.append(c)
+
+        # Tracking color
         img, _ = only_color(img, (h,s,v,h1,s1,v1))
 
         # Find the contours in the image
         contours = get_contours(img)
+        if len(circle_contours)>0:
+            contours += tuple(circle_contours)
+
+
 
         # If there are contours found in the image:
         if len(contours)>0:
@@ -120,8 +152,8 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
                     ids[len(ids)] = new_id_dict
             else:
                 # Actualizo los ids que tengo con las detecciones nuevas
-                if len(contours) > 0:
-                    kpu.update_ids(ids, contours)
+                #if len(contours) > 0:
+                kpu.update_ids(ids, contours)
                 # En caso de haber perdido alguna detección, la actualizo con su predicción
                 kpu.update_lost_detections(ids)
 
@@ -142,7 +174,7 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
         if visualize:
             cv2.imshow('img', img_copy)
             #cv2.imshow('img', cv2.resize(img, (480,700)))
-            k=cv2.waitKey(1)
+            k=cv2.waitKey(0)
             if k==27: break
         
     #release the video to avoid memory leaks, and close the window
@@ -159,4 +191,4 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
 if __name__ == "__main__":
     source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
-    color_tracking(source_path, color_range, visualize=False)
+    color_bg_substraction_tracking(source_path, color_range, non_max_suppresion_threshold=25,  visualize=False)

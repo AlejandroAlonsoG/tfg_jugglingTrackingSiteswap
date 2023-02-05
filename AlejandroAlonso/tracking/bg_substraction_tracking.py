@@ -100,6 +100,6 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_
     return len(ids)
 
 
-
-source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
-bg_substraction_tracking(source_path,visualize=True)
+if __name__ == "__main__":
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
+    bg_substraction_tracking(source_path,visualize=True)
