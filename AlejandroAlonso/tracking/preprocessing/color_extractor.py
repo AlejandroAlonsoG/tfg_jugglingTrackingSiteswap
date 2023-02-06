@@ -8,7 +8,7 @@ def get_center( contour ):
 
 
 # Pilla el color más detectado y hace un rango desde ahi
-def color_extractor(source_path, min_contour_area=1000, index_umbral=2, size=5):
+def color_extractor(source_path, min_contour_area=1000, h_range=2, sv_range1=75, sv_range2=175, size=5):
     cap = cv2.VideoCapture(source_path)
 
     # Object detection from stable camera
@@ -60,8 +60,12 @@ def color_extractor(source_path, min_contour_area=1000, index_umbral=2, size=5):
     (h,s,v) = (int(180*h), int(255*s), v)
 
     cap.release()
+    s1 = min(s, sv_range1)
+    s2 = max(s, sv_range2)
+    v1 = min(v, sv_range1)
+    v2 = max(v, sv_range2) 
     # h selecciona el color, se da un poco de flexibilidad, s y v seleccionan tonos/sombras de ese color, se cogen todas (se podría hacer un rango mas pequeño)
-    return h-index_umbral, 0, 0, h+index_umbral, 255, 255
+    return h-h_range, s1, v1, h+h_range, s2, v2
 
 
 # Hace un histograma con los canales h, s y v y desde ahí pilla los picos y las zonas cercanas segun el umbral. No funciona bien
