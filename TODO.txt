@@ -1,6 +1,7 @@
 -- DETECCIÓN
 Mejorar preprocesado
     - Modifica la imagen para obtener mejores resultados -> Cambiando saturación, blurr ...
+    - Igual se pueden sacar los parámetros para el Kalman?
 Crear un módulo de postprocesado de vídeo
     - Eliminar ruido
         - Estático

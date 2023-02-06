@@ -1,26 +1,19 @@
 # Import libraries
 import cv2, numpy as np
 
-import sys, cv2
-sys.path.insert(0, '../../../AlejandroAlonso/excel_utils')
-import excel_utils as eu
-system = "StephenMeschke"
-ss = "short"
-
 # H,S,V range of the object to be tracked
 
-#h,s,v,h1,s1,v1 = 150,77,70,255,255,255 #RED
-h,s,v,h1,s1,v1 = 35,30,150,185,120,255 #RED_Alex
+h,s,v,h1,s1,v1 = 0,184,128,20,255,255 #RED
 
 # Find these values using hsv_color_picker.py
 #h,s,v,h1,s1,v1 = 156,74,76,166,255,255 #pink
 #h,s,v,h1,s1,v1 = 27,0,0,82,190,255 #GREEN
 
 # Define data's output path
-output_path = '../../../AlejandroAlonso/results/excels/tracking_short_StephenMeschke.xlsx'
+output_path = '/home/stephen/Desktop/red_ball.csv'
 
 # Define the source path
-cap = cv2.VideoCapture('../../../dataset/tests/short.mp4')
+cap = cv2.VideoCapture('/home/stephen/Desktop/source_vids/ss3_id_16.MP4')
 
 # Takes image and color, returns parts of image that are that color
 def only_color(frame, hsv_range):
@@ -61,7 +54,6 @@ def contour_center(c):
 # Create list to save data
 frame_number, positions = 0, []
 
-book = eu.book_initializer(system,ss) #*edit*
 # Iterate though each frame of video
 while True:
     
@@ -83,31 +75,20 @@ while True:
 
     # If there are contours found in the image:
     if len(contours)>0:
-        """ try:
+        try:
             # Sort the contours by area
             c = max(contours, key=cv2.contourArea)
             # Draw the contours on the image
             img = cv2.drawContours(img_copy, c ,-1, (0,0,255), 14)
             # Add the data from the contour to the list
             positions.append(contour_center(c))
-        except: pass """
-        try:
-            contours = sorted(contours, key=cv2.contourArea, reverse=True)
-            for id, c in enumerate(contours):
-                if id<=3:
-                    # Draw the contours on the image
-                    img = cv2.drawContours(img_copy, c ,-1, (0,0,255), 14)
-                    # Add the data from the contour to the list
-                    positions.append(contour_center(c))
-                    eu.book_writer(book, frame_number, id, contour_center(c))
         except: pass
 
     # If no data point got added, add another one
     if len(positions) < frame_number: positions.append((0,0))
     frame_number += 1
-    #show the image and wait 1080x1920
-    imS = cv2.resize(img_copy, (540, 960))
-    cv2.imshow('img', imS)
+    #show the image and wait
+    cv2.imshow('img', img_copy)
     #cv2.imshow('img', cv2.resize(img, (480,700)))
     k=cv2.waitKey(1)
     if k==27: break
@@ -121,16 +102,13 @@ positions = positions[:frame_number]
 
 print('finished tracking')
 #write data
-""" import csv
+import csv
 with open(output_path, 'w') as csvfile:
     fieldnames = ['x_position', 'y_position']
     writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
     writer.writeheader()
     for position in positions:
         x, y = position[0], position[1]
-        writer.writerow({'x_position': x, 'y_position': y}) """
-        
-
-eu.book_saver(book,system,ss, sanitize=False)  #*edit*
+        writer.writerow({'x_position': x, 'y_position': y})
 
 print('finished writing data')

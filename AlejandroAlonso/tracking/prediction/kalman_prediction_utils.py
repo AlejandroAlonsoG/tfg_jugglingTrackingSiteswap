@@ -15,6 +15,7 @@ def init_id_dict(measure, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_
     measure_data["Matched"] = False
     return measure_data
 
+# TODO valorar si puede compensar pasar una lista con las predicciones de los ids en vez de toda la estructura
 def create_distance_matrix(ids, measure_list):
     dist_matrix = np.zeros((len(measure_list),len(ids)))
 
