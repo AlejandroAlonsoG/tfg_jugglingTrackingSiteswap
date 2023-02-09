@@ -30,7 +30,7 @@ def create_distance_matrix(ids, measure_list):
 
     return dist_matrix
 
-def update_ids(ids, measure_list, limit_dist=2000):
+def update_ids(ids, measure_list, max_balls=128, limit_dist=2000, force=False):
     dist_matrix = create_distance_matrix(ids, measure_list)
 
     #Asignar según la distancia de la matriz sea mínima
@@ -60,10 +60,29 @@ def update_ids(ids, measure_list, limit_dist=2000):
             ids[ids_index]["Prediction"] = (x.max(),y.max())
             # Lo marco como encontrado
             ids[ids_index]["Matched"] = True
-        # Creas nuevo id
-        elif dist_matrix[measure_list_index,ids_index] > 0:
+        # Creas nuevo id si hay ids disponibles
+        elif dist_matrix[measure_list_index,ids_index] > 0 and len(ids) < max_balls:
             new_id_dict = init_id_dict(measure_list[measure_list_index])
             ids[len(ids)] = new_id_dict
+        # Si quedan asignaciones por hacer y tienes el flag de forzarlas las haces aunque esten lejos del limite
+        elif dist_matrix[measure_list_index,ids_index] > 0 and max_dist+1 != np.min(dist_matrix) and force==True:
+            # Guardo la coordenada en el historial
+            ids[ids_index]["Hist"].append(ids[ids_index]["Coord"])
+            # Asigno la nueva coordenada
+            ids[ids_index]["Coord"] = measure_list[measure_list_index]
+            # Actualizo el filtro de Kalman
+            ids[ids_index]["KalmanFilter"].update(np.array([[measure_list[measure_list_index][0]], [measure_list[measure_list_index][1]]]))
+            # Reinicio el historial de predicciones
+            new_predictions = []
+            new_predictions.append(ids[ids_index]["Prediction"])
+            ids[ids_index]["HistPrediction"] = new_predictions
+            # Hago la nueva prediccion
+            (x,y) = ids[ids_index]["KalmanFilter"].predict()
+            ids[ids_index]["Prediction"] = (x.max(),y.max())
+            # Lo marco como encontrado
+            ids[ids_index]["Matched"] = True
+        # Resto de las detecciones las pierdes
+
         
         # Quitas tanto el id como la deteccion para futuras asignaciones, si las coordenadas
         # eran None simplemente quitas esa fila

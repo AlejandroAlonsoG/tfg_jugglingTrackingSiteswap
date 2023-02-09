@@ -16,7 +16,10 @@ def get_min_period(sequence,max_period,test_numb):
                 minT=j
                 return minT
 
+    return None
 
+
+# TODO optimizarlo, si encuentro el periodo, puedo devolver el índice en el que se ha encontrado y a partir de ahí buscar el siteswap en vez de buscarlo desde el principio
 def prediction(throw_order: list(), test_numbers=10) -> str:
     ss = ''
     for i in range(len(throw_order)):

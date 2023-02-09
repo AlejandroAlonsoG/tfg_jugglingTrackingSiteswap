@@ -9,19 +9,17 @@
 #----------------------------------------------------------------------+
 
 import cv2, numpy as np
-import sys
-sys.path.insert(0, '../excel_utils')
-import excel_utils as eu
+import excel_utils_debugging as eu
 
 #------------------------------ START PARAMETERS ------------------------------+
 
 color_values = 35,30,150,185,120,255 #red_AlejandroAlonso to help with color_tracking
 
-source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4' # Url of source video
+source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4' # Url of source video
 #source_url='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4'
 
-sys_name = 'red_AlejandroAlonso' # Name of system used for naming the excel book with the results
-ss = '5' # siteswap juggled for naming the excel book with the results
+sys_name = 'manual' # Name of system used for naming the excel book with the results
+ss = '423' # siteswap juggled for naming the excel book with the results
 
 roi_size=200 # Size of the ROI (Region Of Interest)
 roi_factor = 2 # Factor of the ROI (Region Of Interest)
@@ -29,7 +27,7 @@ roi_enable=True # Enables de ROI when labeling frames
 
 BUFFER_MAX=300 # Max size of backtracking buffer
 
-num_balls = 5 # Number of balls to track
+num_balls = 3 # Number of balls to track
 
 #------------------------------ END PARAMETERS ------------------------------+
 
