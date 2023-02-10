@@ -1,7 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+from scipy.signal import argrelextrema
 
-max_frames=100
+max_frames=250
 
 siteswaps = [5,441,423]
 
@@ -54,12 +55,24 @@ def fig_ss(ss, data_x, data_y, max_x, min_x, max_y, min_y, margin=25):
     axs['TopRight'].set_title('Cambios eje x')
     #axs['TopRight'].set_xlim([min_x, max_x])
     axs['TopRight'].plot(data_x)
-    """ tmp = []
-    for i in range(0, len(data_x)):
-        tmp.append(i)
-    axs['TopRight'].plot(data_x,tmp) """
+    ret_x = argrelextrema(np.array(data_x), np.less)[0]
+    for x in ret_x:
+        axs['TopRight'].axvline(x = x, color = 'black', linewidth=0.5, label = 'axvline - full height')
+    # Añadir en caso de querer tener mas puntos para ver minimos locales
+    """ xnew = np.linspace(0, len(data_x), 300) 
+    spl = make_interp_spline(range(len(data_x)), data_x, k=3)  # type: BSpline
+    data_x_smooth = spl(xnew)
+    axs['TopRight'].plot(xnew, data_x_smooth) """
+
     axs['BottomRight'].set_title('Cambios eje y')
     axs['BottomRight'].plot(data_y)
+    ret_y = argrelextrema(np.array(data_y), np.less)[0]
+    for x in ret_y:
+        axs['BottomRight'].axvline(x = x, color = 'black', linewidth=0.5, label = 'axvline - full height')
+
+    for p in ret_y:
+        axs['Left'].plot(data_x[p],data_y[p], marker='o', markersize=3, markeredgecolor="red", markerfacecolor="red")
+    
 
 for ss in siteswaps:
     fig_ss(str(ss), trajectories[ss]['x'][:max_frames], trajectories[ss]['y'][:max_frames], max_x, min_x, max_y, min_y)
