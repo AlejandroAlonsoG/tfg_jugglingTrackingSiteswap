@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import argrelextrema
+from scipy.signal import argrelmin
 
 max_frames=250
 
@@ -55,7 +55,7 @@ def fig_ss(ss, data_x, data_y, max_x, min_x, max_y, min_y, margin=25):
     axs['TopRight'].set_title('Cambios eje x')
     #axs['TopRight'].set_xlim([min_x, max_x])
     axs['TopRight'].plot(data_x)
-    ret_x = argrelextrema(np.array(data_x), np.less)[0]
+    ret_x = argrelmin(np.array(data_x))[0]
     for x in ret_x:
         axs['TopRight'].axvline(x = x, color = 'black', linewidth=0.5, label = 'axvline - full height')
     # Añadir en caso de querer tener mas puntos para ver minimos locales
@@ -66,12 +66,28 @@ def fig_ss(ss, data_x, data_y, max_x, min_x, max_y, min_y, margin=25):
 
     axs['BottomRight'].set_title('Cambios eje y')
     axs['BottomRight'].plot(data_y)
-    ret_y = argrelextrema(np.array(data_y), np.less)[0]
+    ret_y = argrelmin(np.array(data_y))[0]
     for x in ret_y:
         axs['BottomRight'].axvline(x = x, color = 'black', linewidth=0.5, label = 'axvline - full height')
+    ret_y2 = argrelmin(np.array(data_y), order=2)[0]
+    for x in ret_y2:
+        axs['BottomRight'].axvline(x = x, color = 'red', linewidth=1, label = 'axvline - full height')
 
-    for p in ret_y:
+
+    for p in ret_y2:
         axs['Left'].plot(data_x[p],data_y[p], marker='o', markersize=3, markeredgecolor="red", markerfacecolor="red")
+
+    
+
+    """ ret_y2 = argrelextrema(np.array(data_y), np.less, order=2)[0]
+    for p in ret_y2:
+        c1 = plt.Circle((data_x[p],data_y[p]), 5, color='g', fill=False)
+        axs['Left'].add_patch(c1)
+
+    ret_y3 = argrelextrema(np.array(data_y), np.less, order=3)[0]
+    for p in ret_y3:
+        c1 = plt.Circle((data_x[p],data_y[p]), 4, color='b', fill=False)
+        axs['Left'].add_patch(c1) """
     
 
 for ss in siteswaps:

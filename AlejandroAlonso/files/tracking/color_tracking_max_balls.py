@@ -1,7 +1,7 @@
 # Import libraries
 import cv2, numpy as np
-import prediction.kalman_prediction_utils as kpu
-import excel_utils_debugging as eu
+import tracking.prediction.kalman_prediction_utils as kpu
+import tracking.excel_utils_files.excel_utils as eu
 
 # Takes image and color, returns parts of image that are that color
 def only_color(frame, hsv_range):
@@ -77,7 +77,7 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=100, max_balls=5, visualize=False):
+def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=100, max_balls=5, visualize=False, save_data=False):
     system = "ColorTracking"
     ss=(source_path.split('/')[-1]).split('.')[0]
 
@@ -86,7 +86,8 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     # Create list to save data
     frame_number= 0
     ids = {}
-    book = eu.book_initializer(system,ss) #*edit*
+    if save_data:
+        book = eu.book_initializer(system,ss) #*edit*
     if visualize:
         cv2.namedWindow('img', cv2.WINDOW_NORMAL)
     # Iterate though each frame of video
@@ -118,12 +119,12 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
                 contours = contours[:max_balls]
                 # Creo los ids de cada contorno
                 for c in contours:
-                    new_id_dict = kpu.init_id_dict(c)
+                    new_id_dict = kpu.init_id_dict(c, frame_number)
                     ids[len(ids)] = new_id_dict
             else:
                 # Actualizo los ids que tengo con las detecciones nuevas
                 if len(contours) > 0:
-                    kpu.update_ids(ids, contours, max_balls=max_balls)
+                    kpu.update_ids(ids, contours, frame_number, max_balls=max_balls)
                 # En caso de haber perdido alguna detección, la actualizo con su predicción
                 kpu.update_lost_detections(ids)
 
@@ -132,7 +133,8 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
                 coord = elem["Coord"]
 
                 if coord != elem["Prediction"]:
-                    eu.book_writer(book, frame_number+1, key+1, coord)
+                    if save_data:
+                        eu.book_writer(book, frame_number+1, key+1, coord)
                     if coord is not None and visualize:
                         x1, y1 = elem["Coord"]
                         cv2.rectangle(img_copy, (int(x1 - 15), int(y1 - 15)), (int(x1 + 15), int(y1 + 15)), (0, 0, 255), 2)
@@ -152,14 +154,32 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
         cap.release()
         cv2.destroyAllWindows()
 
-    print('finished tracking')        
-    eu.book_saver(book,system,ss, sanitize=False)  #*edit*
-    print('finished writing data with name' + f'.../tracking_{ss}_{system}.xlsx')
+    if save_data:
+        print('finished tracking')        
+        eu.book_saver(book,system,ss, sanitize=False)  #*edit*
+        print('finished writing data with name' + f'.../tracking_{ss}_{system}.xlsx')
 
-    return len(ids)
+    ret_ids = {}
+    for key in ids:
+        ids[key]["Hist"].append(ids[key]["Coord"])
+        elem = {}
+        x_coords, y_coords = [], []
+        for c in ids[key]["Hist"]:
+            if c != None:
+                x_coords.append(c[0])
+                y_coords.append(c[1])
+            else:
+                x_coords.append(None)
+                y_coords.append(None)
+        elem["x"] = x_coords
+        elem["y"] = y_coords
+        elem["Start"] = ids[key]["Start"]
+        ret_ids[key] = elem
+
+    return ret_ids
 
 if __name__ == "__main__":
-    max_balls = 5
+    max_balls = 3
     source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss' +str(max_balls)+'_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
-    color_tracking_max_balls(source_path, color_range, max_balls=max_balls, visualize=True)
+    print(color_tracking_max_balls(source_path, color_range, max_balls=max_balls, visualize=True))

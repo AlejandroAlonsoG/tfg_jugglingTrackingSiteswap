@@ -1,4 +1,5 @@
-l = [0,1,2,3,4,5,6]
-print(l)
-l = l[:5]
-print(l)
+s1='abcaab'
+s2='ca'
+
+print(s2 in s1)
+print(s1 in s1)

@@ -1,8 +1,8 @@
-from prediction.kalman_filter import KalmanFilter
+from tracking.prediction.kalman_filter import KalmanFilter
 import numpy as np
 import math
 
-def init_id_dict(measure, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1):
+def init_id_dict(measure, first_frame, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1):
     measure_data = {}
     measure_data["Coord"] = measure
     measure_data["Hist"] = []
@@ -13,6 +13,7 @@ def init_id_dict(measure, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_
     measure_data["Prediction"] = measure
     measure_data["HistPrediction"] = []
     measure_data["Matched"] = False
+    measure_data["Start"] = first_frame
     return measure_data
 
 # TODO valorar si puede compensar pasar una lista con las predicciones de los ids en vez de toda la estructura
@@ -30,7 +31,7 @@ def create_distance_matrix(ids, measure_list):
 
     return dist_matrix
 
-def update_ids(ids, measure_list, max_balls=128, limit_dist=2000, force=False):
+def update_ids(ids, measure_list, curr_frame, max_balls=128, limit_dist=2000, force=False):
     dist_matrix = create_distance_matrix(ids, measure_list)
 
     #Asignar según la distancia de la matriz sea mínima
@@ -62,7 +63,7 @@ def update_ids(ids, measure_list, max_balls=128, limit_dist=2000, force=False):
             ids[ids_index]["Matched"] = True
         # Creas nuevo id si hay ids disponibles
         elif dist_matrix[measure_list_index,ids_index] > 0 and len(ids) < max_balls:
-            new_id_dict = init_id_dict(measure_list[measure_list_index])
+            new_id_dict = init_id_dict(measure_list[measure_list_index], curr_frame)
             ids[len(ids)] = new_id_dict
         # Si quedan asignaciones por hacer y tienes el flag de forzarlas las haces aunque esten lejos del limite
         elif dist_matrix[measure_list_index,ids_index] > 0 and max_dist+1 != np.min(dist_matrix) and force==True:

@@ -116,12 +116,12 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
             if len(ids) == 0:
                 # Creo los ids de cada contorno
                 for c in contours:
-                    new_id_dict = kpu.init_id_dict(c)
+                    new_id_dict = kpu.init_id_dict(c, frame_number)
                     ids[len(ids)] = new_id_dict
             else:
                 # Actualizo los ids que tengo con las detecciones nuevas
                 if len(contours) > 0:
-                    kpu.update_ids(ids, contours)
+                    kpu.update_ids(ids, contours, frame_number)
                 # En caso de haber perdido alguna detección, la actualizo con su predicción
                 kpu.update_lost_detections(ids)
 
@@ -154,9 +154,26 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
     eu.book_saver(book,system,ss, sanitize=False)  #*edit*
     print('finished writing data with name' + f'.../tracking_{ss}_{system}.xlsx')
 
-    return len(ids)
+    ret_ids = {}
+    for key in ids:
+        ids[key]["Hist"].append(ids[key]["Coord"])
+        elem = {}
+        x_coords, y_coords = [], []
+        for c in ids[key]["Hist"]:
+            if c != None:
+                x_coords.append(c[0])
+                y_coords.append(c[1])
+            else:
+                x_coords.append(None)
+                y_coords.append(None)
+        elem["x"] = x_coords
+        elem["y"] = y_coords
+        elem["Start"] = ids[key]["Start"]
+        ret_ids[key] = elem
+
+    return ret_ids
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
-    color_tracking(source_path, color_range, visualize=False)
+    print(color_tracking(source_path, color_range, visualize=False))
