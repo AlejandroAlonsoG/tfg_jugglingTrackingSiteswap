@@ -1,7 +1,8 @@
 # Import libraries
 import cv2, numpy as np
 import tracking.prediction.kalman_prediction_utils as kpu
-import tracking.excel_utils_files.excel_utils as eu
+import tracking.data_saver_files.excel_utils as eu
+import tracking.data_saver_files.mot16_utils as mu
 
 # Takes image and color, returns parts of image that are that color
 def only_color(frame, hsv_range):
@@ -77,7 +78,7 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=100, max_balls=5, visualize=False, save_data=False):
+def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=100, max_balls=5, visualize=False, save_data=-1):
     system = "ColorTracking"
     ss=(source_path.split('/')[-1]).split('.')[0]
 
@@ -86,8 +87,10 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     # Create list to save data
     frame_number= 0
     ids = {}
-    if save_data:
+    if save_data==1:
         book = eu.book_initializer(system,ss) #*edit*
+    elif save_data==2:
+        file = mu.file_initializer(system,ss)
     if visualize:
         cv2.namedWindow('img', cv2.WINDOW_NORMAL)
     # Iterate though each frame of video
@@ -133,8 +136,10 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
                 coord = elem["Coord"]
 
                 if coord != elem["Prediction"]:
-                    if save_data:
+                    if save_data==1:
                         eu.book_writer(book, frame_number+1, key+1, coord)
+                    elif save_data==2:
+                        mu.file_writer(file, frame_number+1, key+1, coord)
                     if coord is not None and visualize:
                         x1, y1 = elem["Coord"]
                         cv2.rectangle(img_copy, (int(x1 - 15), int(y1 - 15)), (int(x1 + 15), int(y1 + 15)), (0, 0, 255), 2)
@@ -154,10 +159,13 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
         cap.release()
         cv2.destroyAllWindows()
 
-    if save_data:
+    if save_data==1:
         print('finished tracking')        
         eu.book_saver(book,system,ss, sanitize=False)  #*edit*
         print('finished writing data with name' + f'.../tracking_{ss}_{system}.xlsx')
+    elif save_data==2:
+        print('finished tracking')        
+        mu.file_saver(file)
 
     ret_ids = {}
     for key in ids:

@@ -9,14 +9,16 @@
 #----------------------------------------------------------------------+
 
 import cv2, numpy as np
-import excel_utils_debugging as eu
+import data_saver_files.excel_utils as eu
+import data_saver_files.mot16_utils as mu
+
 
 #------------------------------ START PARAMETERS ------------------------------+
 
 color_values = 35,30,150,185,120,255 #red_AlejandroAlonso to help with color_tracking
 
-source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4' # Url of source video
-#source_url='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4'
+#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4' # Url of source video
+source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4'
 
 sys_name = 'manual' # Name of system used for naming the excel book with the results
 ss = '423' # siteswap juggled for naming the excel book with the results
@@ -28,6 +30,8 @@ roi_enable=True # Enables de ROI when labeling frames
 BUFFER_MAX=300 # Max size of backtracking buffer
 
 num_balls = 3 # Number of balls to track
+
+saving_mode = 2 # -1 None, 1 excel, 2 mot16
 
 #------------------------------ END PARAMETERS ------------------------------+
 
@@ -174,8 +178,15 @@ cap.release()
 cv2.destroyAllWindows()
 
 # Save data to excel book
-book = eu.book_initializer(sys_name, ss)
-for i in range(num_balls):
-    for frame, position in enumerate(all_positions[i]):
-        eu.book_writer(book, frame+1, i+1, position)
-eu.book_saver(book,sys_name, ss)
+if saving_mode == 1:
+    book = eu.book_initializer(sys_name, ss)
+    for i in range(num_balls):
+        for frame, position in enumerate(all_positions[i]):
+            eu.book_writer(book, frame+1, i+1, position)
+    eu.book_saver(book,sys_name, ss)
+elif saving_mode == 2:
+    file = mu.file_initializer(sys_name, ss)
+    for frame in range(len(all_positions[0])):
+        for i in range(num_balls):
+            mu.file_writer(file, frame+1, i+1, all_positions[i][frame])
+    mu.file_saver(file)

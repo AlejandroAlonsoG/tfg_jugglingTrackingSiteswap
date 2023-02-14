@@ -113,6 +113,7 @@ def load_data(path: str):
     
     return data, num_balls
 
+
 def get_col_length(col, start=2, no_spaces=True):
     count = 0
     if no_spaces:
