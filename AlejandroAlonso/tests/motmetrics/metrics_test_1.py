@@ -1,4 +1,7 @@
-def motMetricsEnhancedCalculator(gtSource, tSource):
+def format_motp(motp):
+  return '{:.2%}'.format(1 - motp)
+
+def motMetricsEnhancedCalculator(ss, gtSource, tSource):
   # import required packages
   import motmetrics as mm
   import numpy as np
@@ -32,26 +35,35 @@ def motMetricsEnhancedCalculator(gtSource, tSource):
 
   mh = mm.metrics.create()
 
-  summary = mh.compute(acc, metrics=['num_frames', 'idf1', 'idp', 'idr', \
+  """ summary = mh.compute(acc, metrics=['num_frames', 'idf1', 'idp', 'idr', \
                                      'recall', 'precision', 'num_objects', \
                                      'mostly_tracked', 'partially_tracked', \
                                      'mostly_lost', 'num_false_positives', \
                                      'num_misses', 'num_switches', \
                                      'num_fragmentations', 'mota', 'motp' \
                                     ], \
-                      name='acc')
+                      name='acc') """
+  
+  summary = mh.compute(acc, metrics=['num_fragmentations', 'num_misses', 'num_false_positives', 'num_switches', \
+                                     'num_unique_objects', 'mostly_lost', 'partially_tracked', 'mostly_tracked', \
+                                     'recall', 'precision', 'mota', 'motp'
+                                    ], \
+                      name=ss)
+  
 
   strsummary = mm.io.render_summary(
       summary,
-      #formatters={'mota' : '{:.2%}'.format},
-      namemap={'idf1': 'IDF1', 'idp': 'IDP', 'idr': 'IDR', 'recall': 'Rcll', \
-               'precision': 'Prcn', 'num_objects': 'GT', \
-               'mostly_tracked' : 'MT', 'partially_tracked': 'PT', \
-               'mostly_lost' : 'ML', 'num_false_positives': 'FP', \
-               'num_misses': 'FN', 'num_switches' : 'IDsw', \
-               'num_fragmentations' : 'FM', 'mota': 'MOTA', 'motp' : 'MOTP',  \
+      formatters={'mota' : '{:.2%}'.format, 'motp' : format_motp,'recall' : '{:.2%}'.format,'precision' : '{:.2%}'.format},
+      namemap={'num_fragmentations' : 'T. Perdido', 'num_misses': 'D. Perdidas', 'num_false_positives': 'D. Ruido', \
+               'num_switches' : 'ID swap', 'num_unique_objects': 'nBalls', 'mostly_lost' : '<20%', \
+               'mostly_tracked' : '>80%', 'partially_tracked': '20%80%', 'recall': 'Recall', \
+               'precision': 'Precision', 'mota': 'MOTA', 'motp' : 'MOTP',  \
               }
   )
+
   print(strsummary)
 
-motMetricsEnhancedCalculator('/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/short_manual.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/short_ColorTracking.txt')
+siteswaps = ['1', 'short', '3', '423']
+for ss in siteswaps:
+  motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/ss'+ss+'_red_AlejandroAlonso_ColorTracking.txt')
+  print("\n")

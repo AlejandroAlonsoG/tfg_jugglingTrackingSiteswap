@@ -1,4 +1,4 @@
-from tracking.prediction.kalman_filter import KalmanFilter
+from prediction.kalman_filter import KalmanFilter
 import numpy as np
 import math
 

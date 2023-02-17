@@ -18,7 +18,7 @@ import data_saver_files.mot16_utils as mu
 color_values = 35,30,150,185,120,255 #red_AlejandroAlonso to help with color_tracking
 
 #source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4' # Url of source video
-source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4'
+source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4'
 
 sys_name = 'manual' # Name of system used for naming the excel book with the results
 ss = '423' # siteswap juggled for naming the excel book with the results
