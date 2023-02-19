@@ -67,8 +67,8 @@ def book_writer(book: Workbook, frame: int, id: int, coords: tuple[int, int]):
 def book_saver(book: Workbook, system: str, ss:str, sanitize: bool = False):
     if sanitize:
         book_sanitizer(book)
-    book.save(f'{save_dir}tracking_{ss}_{system}.xlsx')
-    print("Book "+ f'tracking_{ss}_{system}.xlsx' +" successfully saved in: "+ save_dir)
+    book.save(f'{save_dir}{ss}_{system}.xlsx')
+    print("Book "+ f'{save_dir}{ss}_{system}.xlsx' +" successfully saved in: "+ save_dir)
 
 """ Quita frames sobrantes al principio """
 def book_sanitizer(book: Workbook):
