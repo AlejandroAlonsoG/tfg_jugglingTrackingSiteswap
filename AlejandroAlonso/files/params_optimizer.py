@@ -21,13 +21,13 @@ def metric(res):
 def main():
     # Lista de valores de 'param' que se utilizarán en las ejecuciones de la función 'test'
     #siteswaps = [(1,1), (3,3), (441,3), (423,3), (5,5)]
-    siteswaps = [(3,3)]
-    dts = np.arange(0.1, 0.3, 0.1)
-    u_xs = range(15,40,5)
-    u_ys = range(15,40,5)
-    std_accs = range(15,40,5)
-    x_std_meass = np.arange(0.1, 0.3, 0.1)
-    y_std_meass = np.arange(0.1, 0.3, 0.1)
+    siteswaps = [(5,5), (441,3), (423,3)]
+    dts = np.arange(0.1, 0.4, 0.1)
+    u_xs = range(10,55,5)
+    u_ys = range(10,55,5)
+    std_accs = range(10,55,5)
+    x_std_meass = np.arange(0.1, 0.4, 0.1)
+    y_std_meass = np.arange(0.1, 0.4, 0.1)
 
     # Creamos un objeto de tipo ThreadPoolExecutor para ejecutar las funciones en paralelo
     with concurrent.futures.ThreadPoolExecutor() as executor:
