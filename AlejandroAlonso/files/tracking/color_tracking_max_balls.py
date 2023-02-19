@@ -93,7 +93,7 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     if save_data==1:
         book = eu.book_initializer(system,ss) #*edit*
     elif save_data==2:
-        file = mu.file_initializer(system,ss)
+        file = mu.file_initializer(system,ss,'Tracking')
     if visualize:
         cv2.namedWindow('img', cv2.WINDOW_NORMAL)
     # Iterate though each frame of video
@@ -190,7 +190,7 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     return ret_ids
 
 if __name__ == "__main__":
-    max_balls = 5
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
+    max_balls = 3
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
     color_tracking_max_balls(source_path, color_range, max_balls=max_balls, save_data=2, visualize=True)

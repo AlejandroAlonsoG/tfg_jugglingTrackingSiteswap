@@ -65,5 +65,5 @@ def motMetricsEnhancedCalculator(ss, gtSource, tSource):
 
 siteswaps = ['1', 'short', '3', '423']
 for ss in siteswaps:
-  motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/ss'+ss+'_red_AlejandroAlonso_ColorTracking.txt')
+  motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTracking.txt')
   print("\n")

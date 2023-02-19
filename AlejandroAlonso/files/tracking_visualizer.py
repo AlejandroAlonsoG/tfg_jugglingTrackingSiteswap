@@ -125,8 +125,9 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
     print("Vide saved in: ", out_name)
 
 if __name__ == "__main__":
-    ss = '3'
+    ss = '423'
     system = 'manual'
+    system = 'ColorTracking'
 
     video_source = 'red_AlejandroAlonso'
 
