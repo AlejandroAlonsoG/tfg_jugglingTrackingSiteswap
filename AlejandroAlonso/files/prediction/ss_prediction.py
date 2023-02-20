@@ -38,8 +38,7 @@ def get_min_period(sequence,max_period,test_numb):
 
 
 
-# TODO optimizarlo, si encuentro el periodo, puedo devolver el índice en el que se ha encontrado y a partir de ahí buscar el siteswap en vez de buscarlo desde el principio
-def prediction(throw_order: list(), test_numbers=10) -> str:
+def get_full_ss_string(throw_order):
     ss = ''
     for i in range(len(throw_order)):
         #list.index(element, start, end), busca la bola i a partir del indice i (la primera aparicion deberia estar en i-1)
@@ -49,6 +48,11 @@ def prediction(throw_order: list(), test_numbers=10) -> str:
             break
         ss += str(next_throw-i)
         i+=1
+    return ss
+
+# TODO optimizarlo, si encuentro el periodo, puedo devolver el índice en el que se ha encontrado y a partir de ahí buscar el siteswap en vez de buscarlo desde el principio
+def prediction(throw_order: list(), test_numbers=10) -> str:
+    ss = get_full_ss_string(throw_order)
     # El periodo maximo es la longitud entre 2 porque el ss se tiene que repetir al menos 2 veces
     max_period = (len(ss)//2)
     # El numero de comprobaciones es el recibido por parametro o el mas grande posible
