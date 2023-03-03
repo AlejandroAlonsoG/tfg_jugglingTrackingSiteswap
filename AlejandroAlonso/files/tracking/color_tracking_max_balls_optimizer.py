@@ -1,8 +1,15 @@
 # Import libraries
 import cv2, numpy as np
-import tracking.prediction.kalman_prediction_utils as kpu
-import tracking.data_saver_files.excel_utils as eu
-import tracking.data_saver_files.mot16_utils as mu
+try:
+    import tracking.prediction.kalman_prediction_utils as kpu
+except:
+    import prediction.kalman_prediction_utils as kpu
+try:
+    import data_saver_files.excel_utils as eu
+    import data_saver_files.mot16_utils as mu
+except:
+    import tracking.data_saver_files.excel_utils as eu
+    import tracking.data_saver_files.mot16_utils as mu
 import re
 
 # Takes image and color, returns parts of image that are that color
@@ -79,13 +86,18 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=100, max_balls=5, visualize=False, save_data=-1, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1):
+def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=100, max_balls=5, visualize=False, save_data=-1):
     mode='Optimizer'
     try:
         ss= re.search(r"ss(\d+)", source_path).group(1)
     except:
         ss="Unknown"
-    system = "_ColorTracking_"+"_"+str(dt)+"_"+str(u_x)+"_"+str(u_y)+"_"+str(std_acc)+"_"+str(x_std_meas)+"_"+str(y_std_meas)
+    system = "ColorTracking_"+str(non_max_suppresion_threshold)
+
+    try:
+        ss= re.search(r"ss(\d+)", source_path).group(1)
+    except:
+        ss="Unknown"
     h,s,v,h1,s1,v1 = hsv_range
     cap = cv2.VideoCapture(source_path)
     # Create list to save data
@@ -94,7 +106,7 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     if save_data==1:
         book = eu.book_initializer(system,ss) #*edit*
     elif save_data==2:
-        file = mu.file_initializer(system,ss, mode)
+        file = mu.file_initializer(system,ss,mode)
     if visualize:
         cv2.namedWindow('img', cv2.WINDOW_NORMAL)
     # Iterate though each frame of video
@@ -126,12 +138,12 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
                 contours = contours[:max_balls]
                 # Creo los ids de cada contorno
                 for c in contours:
-                    new_id_dict = kpu.init_id_dict(c, frame_number, dt, u_x, u_y, std_acc, x_std_meas, y_std_meas)
+                    new_id_dict = kpu.init_id_dict(c, frame_number)
                     ids[len(ids)] = new_id_dict
             else:
                 # Actualizo los ids que tengo con las detecciones nuevas
                 if len(contours) > 0:
-                    kpu.update_ids(ids, contours, frame_number, max_balls=max_balls, dt=dt, u_x=u_x, u_y=u_y, std_acc=std_acc, x_std_meas=x_std_meas, y_std_meas=y_std_meas)
+                    kpu.update_ids(ids, contours, frame_number, max_balls=max_balls)
                 # En caso de haber perdido alguna detección, la actualizo con su predicción
                 kpu.update_lost_detections(ids)
 
@@ -171,16 +183,27 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
         print('finished tracking')        
         mu.file_saver(file)
 
-    return (ss, ss+"_"+system+".txt")
+    ret_ids = {}
+    for key in ids:
+        ids[key]["Hist"].append(ids[key]["Coord"])
+        elem = {}
+        x_coords, y_coords = [], []
+        for c in ids[key]["Hist"]:
+            if c != None:
+                x_coords.append(c[0])
+                y_coords.append(c[1])
+            else:
+                x_coords.append(None)
+                y_coords.append(None)
+        elem["x"] = x_coords
+        elem["y"] = y_coords
+        elem["Start"] = ids[key]["Start"]
+        ret_ids[key] = elem
+
+    return ret_ids
 
 if __name__ == "__main__":
     max_balls = 3
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
-    dt = 0.1
-    u_x=15
-    u_y=30
-    std_acc=35
-    x_std_meas=0.1
-    y_std_meas=0.1
-    color_tracking_max_balls(source_path, color_range, max_balls=max_balls, save_data=2, visualize=True, dt=dt, u_x=u_x, u_y=u_y, std_acc=std_acc, x_std_meas=x_std_meas, y_std_meas=y_std_meas)
+    color_tracking_max_balls(source_path, color_range, max_balls=max_balls, save_data=2, visualize=True)

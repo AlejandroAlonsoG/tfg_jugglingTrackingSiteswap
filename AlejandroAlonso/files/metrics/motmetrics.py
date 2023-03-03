@@ -26,7 +26,7 @@ def motMetricsEnhancedCalculator(ss, gtSource, tSource):
     t_dets = t[t[:,0]==frame,1:6] # select all detections in t
 
     C = mm.distances.iou_matrix(gt_dets[:,1:], t_dets[:,1:], \
-                                max_iou=0.5) # format: gt, t
+                                max_iou=0.8) # format: gt, t
 
     # Call update once for per frame.
     # format: gt object ids, t object ids, distance

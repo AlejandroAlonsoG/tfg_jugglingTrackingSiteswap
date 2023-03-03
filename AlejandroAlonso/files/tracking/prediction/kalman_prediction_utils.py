@@ -1,8 +1,11 @@
-from tracking.prediction.kalman_filter import KalmanFilter
+try:
+    from tracking.prediction.kalman_filter import KalmanFilter
+except:
+    from prediction.kalman_filter import KalmanFilter
 import numpy as np
 import math
 
-def init_id_dict(measure, first_frame, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1):
+def init_id_dict(measure, first_frame, dt=0.3, u_x=1, u_y=1, std_acc=8.5, x_std_meas=0.1, y_std_meas=0.1):
     measure_data = {}
     measure_data["Coord"] = measure
     measure_data["Hist"] = []
@@ -31,7 +34,7 @@ def create_distance_matrix(ids, measure_list):
 
     return dist_matrix
 
-def update_ids(ids, measure_list, curr_frame, max_balls=128, limit_dist=2000, force=False, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1):
+def update_ids(ids, measure_list, curr_frame, max_balls=128, limit_dist=2000, force=False, dt=0.3, u_x=1, u_y=1, std_acc=8.5, x_std_meas=0.1, y_std_meas=0.1):
     dist_matrix = create_distance_matrix(ids, measure_list)
 
     #Asignar según la distancia de la matriz sea mínima

@@ -1,5 +1,4 @@
-s1='abcaab'
-s2='ca'
+import itertools
 
-print(s2 in s1)
-print(s1 in s1)
+for p_values in itertools.permutations(range(1, 10), 3):
+    print(p_values)

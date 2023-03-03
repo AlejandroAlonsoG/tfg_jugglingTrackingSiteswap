@@ -1,8 +1,13 @@
 # Import libraries
 import cv2, numpy as np
-import prediction.kalman_prediction_utils as kpu
-import data_saver_files.excel_utils as eu
-import data_saver_files.mot16_utils as mu
+try:
+    import prediction.kalman_prediction_utils as kpu
+    import data_saver_files.excel_utils as eu
+    import data_saver_files.mot16_utils as mu
+except:
+    import tracking.prediction.kalman_prediction_utils as kpu
+    import tracking.data_saver_files.excel_utils as eu
+    import tracking.data_saver_files.mot16_utils as mu
 import re
 
 # Takes image and color, returns parts of image that are that color
@@ -79,7 +84,7 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=100, max_balls=5, visualize=False, save_data=-1):
+def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=39, max_balls=5, visualize=False, save_data=-1):
     system = "ColorTracking"
     try:
         ss= re.search(r"ss(\d+)", source_path).group(1)
@@ -190,7 +195,7 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     return ret_ids
 
 if __name__ == "__main__":
-    max_balls = 3
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
+    max_balls = 5
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
     color_tracking_max_balls(source_path, color_range, max_balls=max_balls, save_data=2, visualize=True)

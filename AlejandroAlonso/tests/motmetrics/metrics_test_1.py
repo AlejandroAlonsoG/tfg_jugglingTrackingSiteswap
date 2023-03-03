@@ -26,7 +26,7 @@ def motMetricsEnhancedCalculator(ss, gtSource, tSource):
     t_dets = t[t[:,0]==frame,1:6] # select all detections in t
 
     C = mm.distances.iou_matrix(gt_dets[:,1:], t_dets[:,1:], \
-                                max_iou=0.5) # format: gt, t
+                                max_iou=0.8) # format: gt, t
 
     # Call update once for per frame.
     # format: gt object ids, t object ids, distance
@@ -63,7 +63,10 @@ def motMetricsEnhancedCalculator(ss, gtSource, tSource):
 
   print(strsummary)
 
-siteswaps = ['1', 'short', '3', '423']
+""" siteswaps = ['1', 'short', '3', '423']
 for ss in siteswaps:
   motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTracking.txt')
-  print("\n")
+  print("\n") """
+
+ss='423'
+motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTracking.txt')

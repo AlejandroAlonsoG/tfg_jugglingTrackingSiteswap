@@ -2,7 +2,7 @@ save_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot1
 bounding_box_size = 50
 
 
-def file_initializer(system: str, ss:str, mode:str):
+def file_initializer(system: str, ss:str, mode:str=''):
     return open(f'{save_dir}{mode}/{ss}_{system}.txt', 'w+')
 
 

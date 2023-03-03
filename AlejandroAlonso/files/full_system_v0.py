@@ -17,11 +17,9 @@ for ss, max_balls in siteswaps:
     # SS
     throw_seq = seq_extraction(ids)
 
-    ss2 = prediction(throw_seq,test_numbers=2)
-    ss3 = prediction(throw_seq,test_numbers=3)
-    ss4 = prediction(throw_seq,test_numbers=4)
-    ss5 = prediction(throw_seq,test_numbers=5)
-    ss10 = prediction(throw_seq,test_numbers=10)
+    print(ss, throw_seq)
+
+    ss1 = prediction(throw_seq)
     """
         BUSCANDO SS PERFECTO
         ss      2       3       4       5       10      Any
@@ -50,7 +48,7 @@ for ss, max_balls in siteswaps:
         531     False   False   False   False   False   False
         633     False   False   False   False   False   False
     """
-    print("\t{}\t{}\t{}\t{}\t{}\t{}".format(ss,ss in ss2,ss in ss3,ss in ss4,ss in ss5,ss in ss10, ss in ss2 or ss in ss3 or ss in ss4 or ss in ss5 or ss in ss10))
+    print("{}\t{}".format(ss,ss in ss1))
 """ 
 print("Orden de los lanzamientos: ", throw_seq)
 print("Siteswap obtenido2: ", ss2)

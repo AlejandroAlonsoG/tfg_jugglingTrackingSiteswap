@@ -18,10 +18,11 @@ import data_saver_files.mot16_utils as mu
 color_values = 35,30,150,185,120,255 #red_AlejandroAlonso to help with color_tracking
 
 #source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4' # Url of source video
-source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss441_red_AlejandroAlonso.mp4'
 
 sys_name = 'manual' # Name of system used for naming the excel book with the results
-ss = '441' # siteswap juggled for naming the excel book with the results
+ss = '5' # siteswap juggled for naming the excel book with the results
+num_balls = 5 # Number of balls to track
+source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+ss+'_red_AlejandroAlonso.mp4'
 
 roi_size=200 # Size of the ROI (Region Of Interest)
 roi_factor = 2 # Factor of the ROI (Region Of Interest)
@@ -29,7 +30,6 @@ roi_enable=True # Enables de ROI when labeling frames
 
 BUFFER_MAX=300 # Max size of backtracking buffer
 
-num_balls = 3 # Number of balls to track
 
 saving_mode = 2 # -1 None, 1 excel, 2 mot16
 
