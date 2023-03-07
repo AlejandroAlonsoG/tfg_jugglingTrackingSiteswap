@@ -1,7 +1,16 @@
 # Import libraries
 import cv2, numpy as np
-import prediction.kalman_prediction_utils as kpu
-import excel_utils_debugging as eu
+try:
+    import tracking.prediction.kalman_prediction_utils as kpu
+except:
+    import prediction.kalman_prediction_utils as kpu
+try:
+    import data_saver_files.excel_utils as eu
+    import data_saver_files.mot16_utils as mu
+except:
+    import tracking.data_saver_files.excel_utils as eu
+    import tracking.data_saver_files.mot16_utils as mu
+import re
 
 # Takes image and color, returns parts of image that are that color
 def only_color(frame, hsv_range):
@@ -77,16 +86,22 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, visualize=False):
+def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, visualize=False, save_data=-1):
     system = "ColorTracking"
-    ss=(source_path.split('/')[-1]).split('.')[0]
+    try:
+        ss= re.search(r"ss(\d+)", source_path).group(1)
+    except:
+        ss="Unknown"
 
     h,s,v,h1,s1,v1 = hsv_range
     cap = cv2.VideoCapture(source_path)
     # Create list to save data
     frame_number= 0
     ids = {}
-    book = eu.book_initializer(system,ss) #*edit*
+    if save_data==1:
+        book = eu.book_initializer(system,ss) #*edit*
+    elif save_data==2:
+        file = mu.file_initializer(system,ss,'Tracking')
     if visualize:
         cv2.namedWindow('img', cv2.WINDOW_NORMAL)
     # Iterate though each frame of video
@@ -116,12 +131,12 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
             if len(ids) == 0:
                 # Creo los ids de cada contorno
                 for c in contours:
-                    new_id_dict = kpu.init_id_dict(c, frame_number)
+                    new_id_dict = kpu.init_id_dict(c, frame_number, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1)
                     ids[len(ids)] = new_id_dict
             else:
                 # Actualizo los ids que tengo con las detecciones nuevas
                 if len(contours) > 0:
-                    kpu.update_ids(ids, contours, frame_number)
+                    kpu.update_ids(ids, contours, frame_number, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1)
                 # En caso de haber perdido alguna detección, la actualizo con su predicción
                 kpu.update_lost_detections(ids)
 
@@ -130,7 +145,10 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
                 coord = elem["Coord"]
 
                 if coord != elem["Prediction"]:
-                    eu.book_writer(book, frame_number+1, key+1, coord)
+                    if save_data==1:
+                        eu.book_writer(book, frame_number+1, key+1, coord)
+                    elif save_data==2:
+                        mu.file_writer(file, frame_number+1, key+1, coord)
                     if coord is not None and visualize:
                         x1, y1 = elem["Coord"]
                         cv2.rectangle(img_copy, (int(x1 - 15), int(y1 - 15)), (int(x1 + 15), int(y1 + 15)), (0, 0, 255), 2)
@@ -150,9 +168,13 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
         cap.release()
         cv2.destroyAllWindows()
 
-    print('finished tracking')        
-    eu.book_saver(book,system,ss, sanitize=False)  #*edit*
-    print('finished writing data with name' + f'.../tracking_{ss}_{system}.xlsx')
+    if save_data==1:
+        print('finished tracking')        
+        eu.book_saver(book,system,ss, sanitize=False)  #*edit*
+        print('finished writing data with name' + f'.../tracking_{ss}_{system}.xlsx')
+    elif save_data==2:
+        print('finished tracking')        
+        mu.file_saver(file)
 
     ret_ids = {}
     for key in ids:
@@ -174,6 +196,6 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
     return ret_ids
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss441_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
-    print(color_tracking(source_path, color_range, visualize=False))
+    color_tracking(source_path, color_range, save_data=2, visualize=False)

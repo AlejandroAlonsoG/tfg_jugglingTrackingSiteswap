@@ -64,7 +64,7 @@ def motMetricsEnhancedCalculator(ss, gtSource, tSource):
   return strsummary.split("\n")[-1]
 
 if __name__ == "__main__":
-    siteswaps = ['1', 'short', '3', '423']
+    siteswaps = ['1', '3', '423', '441', '5']
     for ss in siteswaps:
         motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTracking.txt')
         print("\n")

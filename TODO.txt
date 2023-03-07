@@ -23,6 +23,10 @@ Ver formas menos manuales de sacar el siteswap
 -- OTROS
 Ver si con Pickle se pueden guardar los ids (O solo sus coordenadas o algo asi) y usar el visualizer desde ahi, seguramente sea mas rápido
 
+Si saco un mapa de calor de BGSubstraction sin filtrar nada, tendré mucha densidad en la zona de las manos, mucha menos pero algo en la zona de las bolas
+Esto me puede servir para saber sobre la zona de las manos. Se pone una rayita vertical justo en medio, y otra horizontal justo encima.
+Cualquier trayectoria que atraviese la horizontal es un lanzamiento, cualquiera que atraviese la vertical de abajo a arriba también
+
 -- TERMINADO
 -16 Mejorar preprocesado
     - Sacar color automáticamente funciona relativamente bien
