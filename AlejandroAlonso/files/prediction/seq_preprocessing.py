@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 def contours_non_max_suppression(contours, threshold_value, use_distance=True):
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
@@ -68,7 +69,7 @@ def RellenarContornos(contours):
 
 
 # Pilla el color más detectado y hace un rango desde ahi
-def bg_substraction_tracking(source_path, min_contour_area=1000,visualize=False):
+def bg_substraction_tracking(source_path, min_contour_area=1000, convergence_threshold=80, min_procesing_threshold=60, x_mul_threshold=0.6, y_mul_threshold=0.6, visualize=False):
     cap = cv2.VideoCapture(source_path)
 
     # Object detection from stable camera
@@ -86,8 +87,12 @@ def bg_substraction_tracking(source_path, min_contour_area=1000,visualize=False)
     bins = (int(max_x), int(max_y))
     hist_range = [(0, max_x), (0, max_y)]
 
-
-    while ret:
+    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    num_frames = 0
+    convergence = False
+    curr_x_mid_point = 0
+    curr_y_mid_point = 0
+    while ret and (num_frames <= min_procesing_threshold or not convergence):
         if visualize:
             img_copy = img.copy()
 
@@ -116,14 +121,6 @@ def bg_substraction_tracking(source_path, min_contour_area=1000,visualize=False)
                 if visualize:
                     x1, y1 = pts[1][i], pts[0][i]
                     cv2.circle(img_copy, (x1, y1), 0, (0, 0, 255), 2)
-        """ for c in contours:
-            area = cv2.contourArea(c)
-            if area > min_contour_area:
-                _, radius = cv2.minEnclosingCircle(c)
-                enclosing_area = np.pi * radius * radius
-                approx = cv2.approxPolyDP(c,0.1*cv2.arcLength(c,True),True)
-                if (len(approx)>3 and cv2.isContourConvex(approx)) or abs(area - enclosing_area) < enclosing_area_diff * enclosing_area:
-                    coords.append(contour_center(c)) """
 
         if len(coords) > 0:
             x_coords, y_coords = zip(*coords)
@@ -134,6 +131,58 @@ def bg_substraction_tracking(source_path, min_contour_area=1000,visualize=False)
             else:
                 hist += hist_frame    
 
+            # Se obtiene el punto del eje x en el que se separan los dos clusters de detecciones
+            column_sums = np.sum(hist, axis=1)
+            start_idx = None
+            high_zones = []
+            x_mul_theshold_iter = x_mul_threshold
+            # TODO si pilla 3 y luego solo 1, que almacene las 3 por si es mejor recuperarlas
+            while x_mul_theshold_iter > 0 and len(high_zones) != 2:
+                high_zones = []
+                threshold = column_sums.max()*x_mul_theshold_iter # Igual se puede ir cambiando hasta dejar de tener 2
+                for i, x in enumerate(column_sums):
+                    if x > threshold:
+                        if start_idx is None:
+                            start_idx = i
+                    elif start_idx is not None:
+                        high_zones.append((start_idx, i-1))
+                        start_idx = None
+                if start_idx is not None:
+                    high_zones.append((start_idx, len(column_sums)-1))
+                x_mul_theshold_iter -= 0.1
+
+            if len(high_zones)>1:
+                high_zones = sorted(high_zones, key = lambda sub: abs(sub[1] - sub[0]), reverse=True)[:2]
+                x_mid_point = ( (high_zones[0][0]+high_zones[0][1])//2 + (high_zones[1][0]+high_zones[1][1])//2 ) //2
+            else:
+                x_mid_point = hist_range[0][1]//2
+            # crear el mapa de calor con imshow
+        
+
+            # Se obtiene el punto del eje y que marca la zona superior de los clusters
+            row_sums = np.sum(hist, axis=0)
+            threshold = row_sums.max()*y_mul_threshold
+            y_mid_point = 0
+            for i, value in enumerate(row_sums):
+                if value >= threshold:
+                    y_mid_point = i
+                    break
+            y_mid_point = hist_range[1][1]- y_mid_point
+
+
+            if curr_x_mid_point == 0:
+                curr_x_mid_point = x_mid_point
+                curr_y_mid_point = y_mid_point
+            else:
+                dist = math.dist((curr_x_mid_point, curr_y_mid_point), (x_mid_point, y_mid_point))
+                if ( dist < convergence_threshold):
+                    convergence = True
+                else:
+                    convergence = False
+                    curr_x_mid_point = (num_frames * curr_x_mid_point + x_mid_point) / (num_frames + 1)
+                    curr_y_mid_point = (num_frames * curr_y_mid_point + y_mid_point) / (num_frames + 1)
+                    
+        
         if visualize:
             cv2.imshow('img', img_copy)
             #cv2.imshow('img', cv2.resize(img, (480,700)))
@@ -141,21 +190,24 @@ def bg_substraction_tracking(source_path, min_contour_area=1000,visualize=False)
             if k==27: break
         ret, img = cap.read()
 
+        num_frames += 1
 
-    cap.release()
     if visualize:
         cap.release()
         cv2.destroyAllWindows()
-    # crear el mapa de calor con imshow
-    plt.imshow(hist.T, origin='upper', extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]])
+
+    #plt.imshow(arr, cmap='hot', interpolation='nearest')
+    """ plt.imshow(hist.T, origin='upper', extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]])
+    plt.axvline(x=x_mid_point, color='r', linestyle='--')
+    plt.axhline(y=y_mid_point, color='r', linestyle='--')
     plt.colorbar()
     plt.title('Mapa de calor del movimiento en el video')
-    plt.show()
+    plt.show() """
 
-    return None
+    return x_mid_point, y_mid_point
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4'
-    bg_substraction_tracking(source_path,visualize=True)
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
+    print(bg_substraction_tracking(source_path,convergence_threshold=1, visualize=False))
     # TODO limitar el tiempo, por ejemplo los 10 segundos del medio o algo así

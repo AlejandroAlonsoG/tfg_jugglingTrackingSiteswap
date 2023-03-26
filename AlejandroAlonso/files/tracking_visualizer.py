@@ -105,12 +105,13 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
                     cv2.putText(img, str(i+1), org, cv2.FONT_HERSHEY_SIMPLEX, 2, colors_reorder[i], 4)
                     org_padding = (coords_x+width+square_len//2+2, coords_y-square_len//2+2)
                     cv2.putText(img, str(i+1), org_padding, cv2.FONT_HERSHEY_SIMPLEX, 2, colors_reorder[i], 4)
+                    
                 except: pass
             num_frame +=1
             out.write(img)
             if visualize:
                 cv2.imshow('img', img)
-                k=cv2.waitKey(1)
+                k=cv2.waitKey(0)
                 if k==27: break
         else:
             break

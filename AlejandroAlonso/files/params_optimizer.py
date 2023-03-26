@@ -1,36 +1,32 @@
 import concurrent.futures
 import numpy as np
-from tracking.color_tracking_max_balls_optimizer import color_tracking_max_balls
+import math
+from prediction.seq_preprocessing import bg_substraction_tracking
 from metrics.motmetrics import motMetricsEnhancedCalculator
 import random
-def test(ss, dist):
+def test(ss, threshold):
     # Esta es la función que se ejecutará con diferentes valores de 'param'
-    # En este ejemplo simplemente se devuelve el valor de 'param' elevado al cuadrado
-    max_balls = ss[1]
-    print(dist)
-    gt_path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'
     source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+str(ss[0])+'_red_AlejandroAlonso.mp4'
-    track_path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Optimizer/'
-    color_range = 35,30,150,185,120,255
-    color_tracking_max_balls(source_path, color_range, max_balls=max_balls, save_data=2, visualize=False, non_max_suppresion_threshold=dist)
-    return motMetricsEnhancedCalculator(str(ss[0]), gt_path+str(ss[0])+'_manual.txt', track_path+str(ss[0])+"_ColorTracking_"+str(dist)+".txt")
+    res,_ = bg_substraction_tracking(source_path,convergence_threshold=1, x_mul_threshold=threshold,  visualize=False)
+    res1 = res >= ss[1][0] and res <= ss[1][0]
+    res2 = abs(((ss[1][1]-ss[1][0]) //2) - res)
+    print("{}\t{}\t{}\t{}\t{}".format(ss, threshold, res, res1, res2))
+    return "{}\t{}\t{}\t{}\t{}".format(ss, threshold, res, res1, res2)
 
 def main():
     # Lista de valores de 'param' que se utilizarán en las ejecuciones de la función 'test'
-    siteswaps = [(1,1), (3,3), (441,3), (423,3), (5,5)]
-    dists = range(1,200,1)
-    print(dists)
+    siteswaps = [(1,(482,632)), (3,(570,600)), (441,(530,557)), (423,(555,590)), (5,(545, 575))]
+    #siteswaps = [(3,(570,600)),]
+    theshold = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.01]
+    #theshold = [0.6,]
     # Creamos un objeto de tipo ThreadPoolExecutor para ejecutar las funciones en paralelo
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Para cada valor de 'param' creamos un objeto Future que ejecuta la función 'test'
-        futures = {executor.submit(test, ss, dist): (ss, dist) for ss in siteswaps for dist in dists}
+        futures = {executor.submit(test, ss, theshold_value): (ss, theshold_value) for ss in siteswaps for theshold_value in theshold}
 
         # Esperamos a que todas las ejecuciones de la función 'test' terminen
         concurrent.futures.wait(futures)
-
-        # Escribir los resultados a un fichero "res_concretos.txt" con formato: ss -> result
-        with open("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Optimizer/res_distancia.txt", "w") as f:
-            f.write("                                       T. Perdido  D. Perdidas  D. Ruido  ID swap  nBalls  <20%  20%80%  >80% Recall Precision   MOTA   MOTP\n")
+        with open("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/res_seq_optimizer.txt", "w") as f:
             for future in futures:
                 f.write(f'{future.result()}\n')
 
