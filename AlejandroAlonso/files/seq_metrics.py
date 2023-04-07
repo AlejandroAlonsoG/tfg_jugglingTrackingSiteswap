@@ -4,6 +4,8 @@ from tracking.color_tracking_max_balls import color_tracking_max_balls
 from tracking.color_tracking_v0 import color_tracking
 from prediction.seq_extractor import seq_extraction
 from prediction.ss_prediction import prediction
+from tracking.data_saver_files.mot16_utils import load_data
+from prettytable import PrettyTable
 
 
 def seq_metrics(ss, tSource):
@@ -23,6 +25,9 @@ def seq_metrics(ss, tSource):
 
 if __name__ == "__main__":
  
+    sources = ['/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/{}_manual.txt',
+               '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/{}_ColorTrackingMaxBalls.txt']
+    # ss, num_balls, [GT]
     siteswaps = [
         ('1',1, [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]), \
         ('3',3, [0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2]), \
@@ -33,26 +38,36 @@ if __name__ == "__main__":
     # Configuration
     color_range = 35,30,150,185,120,255
 
-    for ss, max_balls, gt in siteswaps:
-        source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+ss+'_red_AlejandroAlonso.mp4'
-        # Tracking
-        ids_color = color_tracking(source_path, color_range, visualize=False)
-        ids_max_balls = color_tracking_max_balls(source_path, color_range, max_balls=max_balls, visualize=False)
-        # Seq
-        throw_seq_color = seq_extraction(ids_color)
-        throw_seq_max_balls = seq_extraction(ids_max_balls)
-        # SS
-        res_seq_color = seq_metrics(ss, throw_seq_color)
-        res_seq_max_balls = seq_metrics(ss, throw_seq_max_balls)
-        print("ss"+ss)
-        print("seq_extractor")
-        print("system\tedit_distance")
-        print("Color\t"+str(levenshtein(''.join(str(x) for x in gt), ''.join(str(x) for x in throw_seq_color))))
-        print("Max_balls\t"+str(levenshtein(''.join(str(x) for x in gt), ''.join(str(x) for x in throw_seq_max_balls))))
-        print("ss_extractor")
-        print("system\tres\tedit_distance\tis_present\tpresence\tperiod\tworks")
-        print("Color\t{}\t{}\t{}\t{}\t{}\t{}".format(str(res_seq_color[0]),str(res_seq_color[1]),str(res_seq_color[2]),str(res_seq_color[3]),str(res_seq_color[4]),str(res_seq_color[5])))
-        print("Max_balls\t{}\t{}\t{}\t{}\t{}\t{}".format(str(res_seq_max_balls[0]),str(res_seq_max_balls[1]),str(res_seq_max_balls[2]),str(res_seq_max_balls[3]),str(res_seq_max_balls[4]),str(res_seq_max_balls[5])))
+
+    # Dos formas, desde GT, y desde tracking (mejor de los que tenga)
+
+
+    # Sacar para cada forma y para cada ss:
+        # Distancia edición secuencia respecto GT
+        # Num misses en caso de seq2
+        # Funcionamiento después con la función del ss:
+            # Resultado obtenido
+            # Distancia edición del ss respecto al GT
+            # Si el ss GT está al menos presente en el resultado, y en caso afirmativo su %
+            # Si el periodo del resultado es el del GT
+            # Si funciona perfecto
+    for source in sources:
+        print(source)
+        table = PrettyTable()
+        table.field_names = ["ss", "edit_distance_seq", "misses?", "res", "edit_distance_ss", "is_present", "percentaje", "same_period", "works"]
+        for ss, max_balls, gt in siteswaps: 
+            source_path = source.format(ss)
+            # Tracking
+            ids = load_data(source_path)
+            # Seq
+            throw_seq = seq_extraction(ids)
+            # SS
+            res_seq = seq_metrics(ss, throw_seq)
+
+            table.add_row([ss, str(levenshtein(''.join(str(x) for x in gt), ''.join(str(x) for x in throw_seq))),
+                                                                'Unknown', str(res_seq[0]), str(res_seq[1]),str(res_seq[2]),str(res_seq[3]),str(res_seq[4]),str(res_seq[5])])
+
+        print(table)
 
 
 

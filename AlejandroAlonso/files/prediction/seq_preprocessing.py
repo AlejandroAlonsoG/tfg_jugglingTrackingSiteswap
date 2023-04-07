@@ -204,10 +204,10 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, convergence_thr
     plt.title('Mapa de calor del movimiento en el video')
     plt.show() """
 
-    return x_mid_point, y_mid_point
+    return x_mid_point, max_y-y_mid_point # La resta para poner el 0,0 arriba a la izquierda
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
     print(bg_substraction_tracking(source_path,convergence_threshold=1, visualize=False))
     # TODO limitar el tiempo, por ejemplo los 10 segundos del medio o algo así

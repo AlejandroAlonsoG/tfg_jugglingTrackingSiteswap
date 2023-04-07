@@ -54,7 +54,7 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
     if file_mode==1:
         data,num_balls = eu.load_data(path_book)
     else:
-        data,num_balls = mu.load_data(path_book)
+        data,num_balls = mu.load_data_visualizer(path_book)
 
     if visualize:
         cv2.namedWindow('img', cv2.WINDOW_NORMAL)

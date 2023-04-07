@@ -16,7 +16,7 @@ def file_saver(file):
     file.close()
     print("File"+" successfully saved in: "+ save_dir)
 
-def load_data(path: str):
+def load_data_visualizer(path: str):
     ret = {}
     with open(path) as file:
         for line in file:
@@ -36,3 +36,32 @@ def load_data(path: str):
                 ret[id].append((bb_left+bounding_box_size//2,bb_top+bounding_box_size//2))
 
     return ret, len(ret)
+
+def load_data(path: str):
+    ret = {}
+    with open(path) as file:
+        for line in file:
+            frame, id, bb_left, bb_top,bounding_box_size,bounding_box_size, _, _,_,_ = [int(i) for i in line.split(',')]
+            id = id-1
+            if id in ret:
+                if len(ret[id]['x']) == frame-1:
+                    ret[id]['x'].append(bb_left+bounding_box_size//2)
+                    ret[id]['y'].append(bb_top+bounding_box_size//2)
+                else:
+                    while len(ret[id]['x']) < frame-1:
+                        ret[id]['x'].append(None)
+                        ret[id]['y'].append(None)
+                    ret[id]['x'].append(bb_left+bounding_box_size//2)
+                    ret[id]['y'].append(bb_top+bounding_box_size//2)
+            else:
+                ret[id] = {}
+                ret[id]['x'] = []
+                ret[id]['y'] = []
+                ret[id]['Start'] = 0
+                while len(ret[id]['x']) < frame-1:
+                    ret[id]['x'].append(None)
+                    ret[id]['y'].append(None)
+                ret[id]['x'].append(bb_left+bounding_box_size//2)
+                ret[id]['y'].append(bb_top+bounding_box_size//2)
+
+    return ret
