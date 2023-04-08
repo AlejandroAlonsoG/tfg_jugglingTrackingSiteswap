@@ -5,7 +5,7 @@
 # Full proyect repository:                                             |
 #                                                                      |
 # Most of the code in this file comes from Stephen Meschke "juggling"  |
-#  repo wich you can find in: https://github.com/smeschke/juggling     |
+#  repo which you can find in: https://github.com/smeschke/juggling     |
 #----------------------------------------------------------------------+
 
 import cv2, numpy as np

@@ -196,6 +196,6 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
     return ret_ids
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss441_red_AlejandroAlonso.mp4'
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
     color_tracking(source_path, color_range, save_data=2, visualize=False)

@@ -26,7 +26,7 @@ def seq_metrics(ss, tSource):
 if __name__ == "__main__":
  
     sources = ['/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/{}_manual.txt',
-               '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/{}_ColorTrackingMaxBalls.txt']
+               '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/{}_ColorTracking.txt']
     # ss, num_balls, [GT]
     siteswaps = [
         ('1',1, [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]), \

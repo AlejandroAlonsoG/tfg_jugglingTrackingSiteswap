@@ -56,8 +56,8 @@ def fig_ss(ss, data_x, data_y, max_x, min_x, max_y, min_y, margin=25):
     #axs['TopRight'].set_xlim([min_x, max_x])
     axs['TopRight'].plot(data_x)
     ret_x = argrelmin(np.array(data_x))[0]
-    for x in ret_x:
-        axs['TopRight'].axvline(x = x, color = 'black', linewidth=0.5, label = 'axvline - full height')
+    #for x in ret_x:
+    #    axs['TopRight'].axvline(x = x, color = 'black', linewidth=0.5, label = 'axvline - full height')
     # Añadir en caso de querer tener mas puntos para ver minimos locales
     """ xnew = np.linspace(0, len(data_x), 300) 
     spl = make_interp_spline(range(len(data_x)), data_x, k=3)  # type: BSpline
@@ -67,8 +67,8 @@ def fig_ss(ss, data_x, data_y, max_x, min_x, max_y, min_y, margin=25):
     axs['BottomRight'].set_title('Cambios eje y')
     axs['BottomRight'].plot(data_y)
     ret_y = argrelmin(np.array(data_y))[0]
-    for x in ret_y:
-        axs['BottomRight'].axvline(x = x, color = 'black', linewidth=0.5, label = 'axvline - full height')
+    #for x in ret_y:
+        #axs['BottomRight'].axvline(x = x, color = 'black', linewidth=0.5, label = 'axvline - full height')
     ret_y2 = argrelmin(np.array(data_y), order=2)[0]
     for x in ret_y2:
         axs['BottomRight'].axvline(x = x, color = 'red', linewidth=1, label = 'axvline - full height')
