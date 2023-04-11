@@ -2,8 +2,10 @@
 import cv2, numpy as np
 try:
     import tracking.prediction.kalman_prediction_utils as kpu
+    from tracking.preprocessing.color_extractor import color_extractor, color_extractor_test2
 except:
     import prediction.kalman_prediction_utils as kpu
+    from preprocessing.color_extractor import color_extractor, color_extractor_test2
 try:
     import data_saver_files.excel_utils as eu
     import data_saver_files.mot16_utils as mu
@@ -155,6 +157,7 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
                         cv2.putText(img_copy, "Id {}".format(key), (int(x1 + 15), int(y1 + 10)), 0, 0.5, (0, 0, 255), 2)
 
         frame_number += 1
+        print("t-", frame_number)
         #show the image and wait 1080x1920
         #imS = cv2.resize(img_copy, (540, 960))
         if visualize:
@@ -196,6 +199,8 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
     return ret_ids
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4'
-    color_range = 35,30,150,185,120,255
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
+    #color_range = 35,30,150,185,120,255
+    color_range = color_extractor(source_path)
+    print(color_range)
     color_tracking(source_path, color_range, save_data=2, visualize=False)

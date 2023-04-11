@@ -152,7 +152,7 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, convergence_thr
                 x_mul_theshold_iter -= 0.1
 
             if len(high_zones)>1:
-                high_zones = sorted(high_zones, key = lambda sub: abs(sub[1] - sub[0]), reverse=True)[:2]
+                high_zones = sorted(high_zones, key = lambda sub: abs(sub[1] - sub[0]), reverse=True)[::len(high_zones)-1] # Pilla el primer y el ultimo elemento para calcular el punto medio
                 x_mid_point = ( (high_zones[0][0]+high_zones[0][1])//2 + (high_zones[1][0]+high_zones[1][1])//2 ) //2
             else:
                 x_mid_point = hist_range[0][1]//2

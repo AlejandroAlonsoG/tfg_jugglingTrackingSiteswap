@@ -133,3 +133,6 @@ dataset/
 
 # result videos
 AlejandroAlonso/results/videos
+
+# mot16 optimizer
+AlejandroAlonso/results/mot16/Optimizer*

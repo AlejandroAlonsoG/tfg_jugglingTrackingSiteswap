@@ -53,7 +53,7 @@ def seq_extraction_cuadrants(ids, point, img_threshold, img_width):
         keys_info[key] = tmp
     throw_order = []
     throw_frames = []
-    for num_frames in range(1, len(ids[1]['x'])+1):
+    for num_frames in range(1, len(ids[0]['x'])+1):
         for key, coords in ids.items():
             curr_x = coords['x'][num_frames-1]
             curr_y = coords['y'][num_frames-1]
