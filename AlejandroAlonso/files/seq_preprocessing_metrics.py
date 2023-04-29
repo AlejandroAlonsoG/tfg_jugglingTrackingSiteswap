@@ -1,6 +1,6 @@
 import math
 from prettytable import PrettyTable
-from prediction.seq_preprocessing import bg_substraction_tracking
+from prediction.seq_preprocessing import get_division_point
 
 def distancia_y_rango(punto, point_pred, umbral):
     """
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     table.field_names = ["ss", "gt", "pred", "dist", "in_range"]
     for ss, point_gt in siteswaps:
         source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+ss+'_red_AlejandroAlonso.mp4'
-        point_pred = bg_substraction_tracking(source_path,convergence_threshold=1, visualize=False)
+        point_pred = get_division_point(source_path,convergence_threshold=1, visualize=False)
         dist, in_range = distancia_y_rango(point_gt, point_pred, 30)
         table.add_row([ss, point_gt, point_pred, dist, in_range])
 

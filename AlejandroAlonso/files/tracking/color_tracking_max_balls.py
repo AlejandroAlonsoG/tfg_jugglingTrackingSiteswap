@@ -197,8 +197,9 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     return ret_ids
 
 if __name__ == "__main__":
-    max_balls = 1
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss1_red_AlejandroAlonso.mp4'
-    color_range = 35,30,150,185,120,255
+    max_balls = 5
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss5_red2_AlejandroAlonso.mp4'
+    #color_range = 35,30,150,185,120,255
+    color_range = 168,140,69,175,255,198 #red2_AlejandroAlonso to help with color_tracking
     #color_range = color_extractor(source_path)
-    color_tracking_max_balls(source_path, color_range, max_balls=max_balls, save_data=2, visualize=False)
+    color_tracking_max_balls(source_path, color_range, max_balls=max_balls, save_data=2, visualize=True)

@@ -20,12 +20,12 @@ def contour_center(c):
 
 
 # Pilla el color más detectado y hace un rango desde ahi
-def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_diff=0.5, arc_const=0.1, save_data=-1, visualize=False):
+def get_division_point(source_path, min_contour_area=1000, enclosing_area_diff=0.5, arc_const=0.1, save_data=-1, visualize=False):
     try:
         ss= re.search(r"ss(\d+)", source_path).group(1)
     except:
         ss="Unknown"
-    system = "BgSubstractionTracking"+'_'+ss+str(min_contour_area)+'_'+str(enclosing_area_diff)+'_'+str(arc_const)
+    system = "BgSubstractionTracking"
 
     cap = cv2.VideoCapture(source_path)
 
@@ -140,5 +140,5 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4'
-    bg_substraction_tracking(source_path,visualize=False, save_data=2)
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss441_red2_AlejandroAlonso.mp4'
+    get_division_point(source_path,visualize=False, save_data=2)

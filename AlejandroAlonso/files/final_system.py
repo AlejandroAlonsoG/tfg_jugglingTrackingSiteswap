@@ -53,15 +53,18 @@ def motMetricsEnhancedCalculator(gtSource, tSource):
 
   summary = mh.compute(acc, metrics=['mota', 'motp'])
 
-  motp = summary['motp']
-  mota = summary['mota']
+  motp = summary['motp'][0]
+  mota = summary['mota'][0]
 
   return motp, mota
 
 def get_evaluation(tracking_path, gt_path, throw_seq, ss):
     motp, mota = motMetricsEnhancedCalculator(gt_path, tracking_path)
     ss_string = get_full_ss_string(throw_seq)
-    presence = ss_string.count(ss)/(len(ss_string)/len(ss))
+    try:
+        presence = ss_string.count(ss)/(len(ss_string)/len(ss))
+    except:
+        presence = -1
 
     return motp, mota, presence
 
@@ -106,33 +109,26 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
             # Evaluation and return
 
             if not evaluate:
-                return '---', '---', '---', ss_pred, ss_pred == ss
+                return ss, '---', '---', '---', ss_pred, ss_pred == ss
             else:
                 if save_data == -1:
                     raise Exception("evaluate and save_data = -1")
                 tracking_file_path = tracking_dir+tracking_file_format.format(ss, tracking_system)
                 gt_file_path = gt_dir+gt_file_format.format(ss)
                 motp, mota, presence = get_evaluation(tracking_file_path, gt_file_path, throw_seq, ss)
-                return motp, mota, presence, ss_pred, ss_pred==ss
+                return ss, motp, mota, presence, ss_pred, ss_pred==ss
 
 if __name__ == "__main__":
-    siteswaps = ['1', '40', '31', '4', '330', '3', '423', '441', '531', '51', '4', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6', '7']
+    siteswaps = ['1', '40', '31', '4', '330', '3', '423', '441', '531', '51', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6', '7']
     tracking_systems = ['ColorTrackingMaxBalls', 'ColorTrackingV0', 'BgSubstractionMaxBalls', 'BgSubstraction']
     color_range = 168,140,69,175,255,198
-    for misses in range(10,21, 5):
-        for test in range(4,11,2):
-            count = 0
-            #table = PrettyTable()
-            #table.field_names = ["MOTP", "MOTA", "Presence", "Prediction", "Works"]
-            for ss in siteswaps:
-                max_balls = int(sum(int(char) for char in ss) / len(ss))
-                res = execute(evaluate = False, tracking_system = tracking_systems[0], color_range = color_range, max_balls = max_balls, tracking_preprocessing = False, max_cuadrant_misses = misses, ss_test_numbers = test, ss=ss, save_data = -1)
-                #table.add_row(res)
-                if res[4]:
-                    count +=1
-
-            print(misses, '-', test, '->', count)
-            #print(table)
+    table = PrettyTable()
+    table.field_names = ["ss", "MOTP", "MOTA", "Presence", "Prediction", "Works"]
+    for ss in siteswaps:
+        max_balls = int(sum(int(char) for char in ss) / len(ss))
+        res = execute(evaluate = True, tracking_system = tracking_systems[0], color_range = color_range, max_balls = max_balls, tracking_preprocessing = False, max_cuadrant_misses = 8, ss_test_numbers = 5, ss=ss, save_data = 2)
+        table.add_row(res)
+    print(table)
 
             
             

@@ -51,7 +51,7 @@ def get_full_ss_string(throw_order):
     return ss
 
 # TODO optimizarlo, si encuentro el periodo, puedo devolver el índice en el que se ha encontrado y a partir de ahí buscar el siteswap en vez de buscarlo desde el principio
-def prediction(throw_order: list(), test_numbers=10) -> str:
+def prediction(throw_order: list(), test_numbers=5) -> str:
     ss = get_full_ss_string(throw_order)
     # El periodo maximo es la longitud entre 2 porque el ss se tiene que repetir al menos 2 veces
     max_period = (len(ss)//2)
@@ -87,8 +87,6 @@ def ss_validity_checker(ss: str, numBalls: int) -> bool:
     while start<len(ss):
         for c in itertools.islice(ss,start+1,None):
             idx = ss.index(c, start+1)
-            tmp1 = int(ss[idx])
-            tmp2 = int(ss[start])
             if(int(ss[start])-int(ss[idx]) == idx-start):
                 return False
         start+=1

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Capture the webcam (or enter path to video)
-cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4')
+cap = cv2.VideoCapture('/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss5_red2_AlejandroAlonso.mp4')
 
 
 def nothing(arg): pass

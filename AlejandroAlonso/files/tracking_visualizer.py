@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 
 save_dir='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/'
-dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/'
+dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
 output_path='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/videos/'
 
 #path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_ColorTracking.xlsx'
@@ -43,14 +43,12 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
         save_dir+='Tracking/'
     f'{save_dir}{ss}_{system}.txt'
     path_book = f'{save_dir}{ss}_{system}'
-
     if file_mode==1:
         path_book+='.xlsx'
     else:
         path_book+='.txt'
 
     source_path= f'{dataset_dir}ss{ss}_{video_source}.mp4'
-
     if file_mode==1:
         data,num_balls = eu.load_data(path_book)
     else:
@@ -117,7 +115,6 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
             break
         ret, img = cap.read()
 
-    print(num_frame)
     cap.release()
     out.release()
     if visualize:
@@ -127,13 +124,15 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
 
 if __name__ == "__main__":
     ss = '5'
-    system = 'ColorTrackingMaxBalls'
+    #system = 'ColorTrackingMaxBalls'
+    #system = 'BgSubstractionTracking'
+    system = 'ColorTracking'
 
-    video_source = 'red_AlejandroAlonso'
+    video_source = 'red2_AlejandroAlonso'
 
     visualize=True
     square_len=50
     trayectory_limit = 10
     file_mode=2
 
-    tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualize=visualize, file_mode=file_mode)
+    tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, video_source=video_source, visualize=visualize, file_mode=file_mode)

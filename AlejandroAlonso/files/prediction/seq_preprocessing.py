@@ -69,7 +69,7 @@ def RellenarContornos(contours):
 
 
 # Pilla el color más detectado y hace un rango desde ahi
-def bg_substraction_tracking(source_path, min_contour_area=1000, convergence_threshold=80, min_procesing_threshold=60, x_mul_threshold=0.6, y_mul_threshold=0.6, visualize=False):
+def get_division_point(source_path, min_contour_area=1000, convergence_threshold=80, min_procesing_threshold=60, x_mul_threshold=0.6, y_mul_threshold=0.6, visualize=False):
     cap = cv2.VideoCapture(source_path)
 
     # Object detection from stable camera
@@ -87,7 +87,6 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, convergence_thr
     bins = (int(max_x), int(max_y))
     hist_range = [(0, max_x), (0, max_y)]
 
-    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     num_frames = 0
     convergence = False
     curr_x_mid_point = 0
@@ -209,5 +208,5 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, convergence_thr
 
 if __name__ == "__main__":
     source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
-    print(bg_substraction_tracking(source_path,convergence_threshold=1, visualize=False))
+    print(get_division_point(source_path,convergence_threshold=1, visualize=False))
     # TODO limitar el tiempo, por ejemplo los 10 segundos del medio o algo así
