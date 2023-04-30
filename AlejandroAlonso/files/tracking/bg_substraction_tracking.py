@@ -20,7 +20,7 @@ def contour_center(c):
 
 
 # Pilla el color más detectado y hace un rango desde ahi
-def get_division_point(source_path, min_contour_area=1000, enclosing_area_diff=0.5, arc_const=0.1, save_data=-1, visualize=False):
+def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_diff=0.5, arc_const=0.1, save_data=-1, visualize=False):
     try:
         ss= re.search(r"ss(\d+)", source_path).group(1)
     except:
@@ -141,4 +141,4 @@ def get_division_point(source_path, min_contour_area=1000, enclosing_area_diff=0
 
 if __name__ == "__main__":
     source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss441_red2_AlejandroAlonso.mp4'
-    get_division_point(source_path,visualize=False, save_data=2)
+    bg_substraction_tracking(source_path,visualize=False, save_data=2)

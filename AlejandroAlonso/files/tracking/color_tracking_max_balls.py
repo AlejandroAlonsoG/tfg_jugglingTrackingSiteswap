@@ -98,7 +98,7 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     frame_number= 0
     ids = {}
     if save_data==1:
-        book = eu.book_initializer(system,ss) #*edit*
+        book = eu.book_initializer(system,ss)
     elif save_data==2:
         file = mu.file_initializer(system,ss,'Tracking')
     if visualize:
@@ -157,10 +157,8 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
 
         frame_number += 1
         #show the image and wait 1080x1920
-        #imS = cv2.resize(img_copy, (540, 960))
         if visualize:
             cv2.imshow('img', img_copy)
-            #cv2.imshow('img', cv2.resize(img, (480,700)))
             k=cv2.waitKey(1)
             if k==27: break
         

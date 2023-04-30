@@ -107,37 +107,37 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
             # Seq_extraction
             point = point_extractor(source_path)
             
-            throw_seq, num_misses = seq_extraction_cuadrants(ids, point, 0,0)
-            ids = load_data(tracking_dir+tracking_file_format.format(ss, tracking_system))
-            throw_seq_cuadrants, num_misses = seq_extraction_cuadrants(ids, point, 0,0)
+            ids2 = load_data(tracking_dir+tracking_file_format.format(ss, tracking_system))
+            throw_seq1_cuadrants, num_misses = seq_extraction_cuadrants(ids, point, 0,0)
+            throw_seq2_cuadrants, num_misses = seq_extraction_cuadrants(ids2, point, 0,0)
             #if num_misses > max_cuadrant_misses:
-            throw_seq = seq_extraction(ids)
+            throw_seq_1= seq_extraction(ids)
+            throw_seq_2= seq_extraction(ids2)
             
             # SS extraction
-            ss_pred_traj = prediction(throw_seq, test_numbers=ss_test_numbers)
-            ss_pred_cuadrants = prediction(throw_seq_cuadrants, test_numbers=ss_test_numbers)
+            ss_pred_traj_1 = prediction(throw_seq_1, test_numbers=ss_test_numbers)
+            ss_pred_traj_2 = prediction(throw_seq_2, test_numbers=ss_test_numbers)
+            ss_pred_cuadrants_1 = prediction(throw_seq1_cuadrants, test_numbers=ss_test_numbers)
+            ss_pred_cuadrants_2 = prediction(throw_seq2_cuadrants, test_numbers=ss_test_numbers)
 
 
             # Evaluation and return
-            works_traj = eq_ss(ss, ss_pred_traj)
-            works_cuadrants = eq_ss(ss, ss_pred_cuadrants)
+            works_traj_1 = eq_ss(ss, ss_pred_traj_1)
+            works_traj_2 = eq_ss(ss, ss_pred_traj_2)
+            works_cuadrants_1 = eq_ss(ss, ss_pred_cuadrants_1)
+            works_cuadrants_2 = eq_ss(ss, ss_pred_cuadrants_2)
 
             if not evaluate:
-                return ss, '---', '---', '---', ss_pred_traj, ss_pred_cuadrants, works_traj, works_cuadrants, works_traj or works_cuadrants
+                return ss, works_traj_1, works_traj_2, works_cuadrants_1, works_cuadrants_2, works_traj_1 or works_traj_2 or works_cuadrants_1 or works_cuadrants_2
             else:
-                if save_data == -1:
-                    raise Exception("evaluate and save_data = -1")
-                tracking_file_path = tracking_dir+tracking_file_format.format(ss, tracking_system)
-                gt_file_path = gt_dir+gt_file_format.format(ss)
-                motp, mota, presence = get_evaluation(tracking_file_path, gt_file_path, throw_seq, ss)
-                return ss, motp, mota, presence, ss_pred_traj, ss_pred_cuadrants, works_traj, works_cuadrants, works_traj or works_cuadrants
+                return None
 
 if __name__ == "__main__":
     siteswaps = ['1', '40', '31', '4', '330', '3', '423', '441', '531', '51', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6', '7']
     tracking_systems = ['ColorTrackingMaxBalls', 'ColorTrackingV0', 'BgSubstractionMaxBalls', 'BgSubstraction']
     color_range = 168,140,69,175,255,198
     table = PrettyTable()
-    table.field_names = ["ss", "MOTP", "MOTA", "Presence", "Prediction trajectories", "Prediction cuadrants", "Works trajectories", "Work cuadrants", "Works any"]
+    table.field_names = ["ss", "works_traj_1", "works_traj_2", "works_cuadrants_1", "works_cuadrants_2", "Works any"]
     for idx, ss in enumerate(siteswaps):
         print(idx+1, "/", len(siteswaps))
         max_balls = int(sum(int(char) for char in ss) / len(ss))

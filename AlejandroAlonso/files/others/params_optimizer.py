@@ -1,13 +1,13 @@
 import concurrent.futures
 import numpy as np
 import math
-from prediction.seq_preprocessing import get_division_point
+from prediction.seq_preprocessing import point_extractor
 from metrics.motmetrics import motMetricsEnhancedCalculator
 import random
 def test(ss, threshold):
     # Esta es la función que se ejecutará con diferentes valores de 'param'
     source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+str(ss[0])+'_red_AlejandroAlonso.mp4'
-    res,_ = get_division_point(source_path,convergence_threshold=1, x_mul_threshold=threshold,  visualize=False)
+    res,_ = point_extractor(source_path,convergence_threshold=1, x_mul_threshold=threshold,  visualize=False)
     res1 = res >= ss[1][0] and res <= ss[1][0]
     res2 = abs(((ss[1][1]-ss[1][0]) //2) - res)
     print("{}\t{}\t{}\t{}\t{}".format(ss, threshold, res, res1, res2))

@@ -4,7 +4,7 @@ from tracking.color_tracking_max_balls import color_tracking_max_balls
 from tracking.color_tracking_v0 import color_tracking
 from prediction.seq_extractor import seq_extraction_cuadrants, seq_extraction
 from prediction.ss_prediction import prediction
-from prediction.seq_preprocessing import get_division_point
+from prediction.seq_preprocessing import point_extractor
 from tracking.data_saver_files.mot16_utils import load_data
 from prettytable import PrettyTable
 

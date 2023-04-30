@@ -68,8 +68,7 @@ def RellenarContornos(contours):
     return filled_contours
 
 
-# Pilla el color más detectado y hace un rango desde ahi
-def get_division_point(source_path, min_contour_area=1000, convergence_threshold=80, min_procesing_threshold=60, x_mul_threshold=0.6, y_mul_threshold=0.6, visualize=False):
+def point_extractor(source_path, min_contour_area=1000, convergence_threshold=80, min_procesing_threshold=60, x_mul_threshold=0.6, y_mul_threshold=0.6, visualize=False):
     cap = cv2.VideoCapture(source_path)
 
     # Object detection from stable camera
@@ -152,9 +151,10 @@ def get_division_point(source_path, min_contour_area=1000, convergence_threshold
 
             if len(high_zones)>1:
                 high_zones = sorted(high_zones, key = lambda sub: abs(sub[1] - sub[0]), reverse=True)[::len(high_zones)-1] # Pilla el primer y el ultimo elemento para calcular el punto medio
-                x_mid_point = ( (high_zones[0][0]+high_zones[0][1])//2 + (high_zones[1][0]+high_zones[1][1])//2 ) //2
+                x_mid_point = (high_zones[0][0]+high_zones[1][0])//2
             else:
-                x_mid_point = hist_range[0][1]//2
+                x_mid_point = curr_x_mid_point
+                # x_mid_point = hist_range[0][1]//2
             # crear el mapa de calor con imshow
         
 
@@ -195,7 +195,6 @@ def get_division_point(source_path, min_contour_area=1000, convergence_threshold
         cap.release()
         cv2.destroyAllWindows()
 
-    #plt.imshow(arr, cmap='hot', interpolation='nearest')
     """ plt.imshow(hist.T, origin='upper', extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]])
     plt.axvline(x=x_mid_point, color='r', linestyle='--')
     plt.axhline(y=y_mid_point, color='r', linestyle='--')
@@ -208,5 +207,5 @@ def get_division_point(source_path, min_contour_area=1000, convergence_threshold
 
 if __name__ == "__main__":
     source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
-    print(get_division_point(source_path,convergence_threshold=1, visualize=False))
+    print(point_extractor(source_path,convergence_threshold=1, visualize=False))
     # TODO limitar el tiempo, por ejemplo los 10 segundos del medio o algo así
