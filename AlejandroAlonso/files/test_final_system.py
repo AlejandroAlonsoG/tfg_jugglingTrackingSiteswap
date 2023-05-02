@@ -14,7 +14,9 @@ from tracking.data_saver_files.mot16_utils import load_data
 gt_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'
 tracking_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'
 dataset_dir = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
+#dataset_dir = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/jugglingLab/'
 video_file_format = 'ss{}_red2_AlejandroAlonso.mp4' # ss
+#video_file_format = 'ss{}_red_JugglingLab.mp4' # ss
 gt_file_format = "{}_manual2.txt" # ss
 tracking_file_format = '{}_{}.txt' # ss, tracking_system
 
@@ -136,6 +138,7 @@ if __name__ == "__main__":
     siteswaps = ['1', '40', '31', '4', '330', '3', '423', '441', '531', '51', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6', '7']
     tracking_systems = ['ColorTrackingMaxBalls', 'ColorTrackingV0', 'BgSubstractionMaxBalls', 'BgSubstraction']
     color_range = 168,140,69,175,255,198
+    #color_range = 0,50,0,255,255,255
     table = PrettyTable()
     table.field_names = ["ss", "works_traj_1", "works_traj_2", "works_cuadrants_1", "works_cuadrants_2", "Works any"]
     for idx, ss in enumerate(siteswaps):

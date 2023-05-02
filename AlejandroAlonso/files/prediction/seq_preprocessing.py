@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+from scipy.ndimage import gaussian_filter1d
+from scipy.signal import argrelextrema
 
 def contours_non_max_suppression(contours, threshold_value, use_distance=True):
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
@@ -52,7 +54,7 @@ def contour_center(c):
     return center
 
 
-def RellenarContornos(contours):
+def fill_contours(contours):
     filled_contours = []
 
     for contour in contours:
@@ -68,7 +70,7 @@ def RellenarContornos(contours):
     return filled_contours
 
 
-def point_extractor(source_path, min_contour_area=1000, convergence_threshold=80, min_procesing_threshold=60, x_mul_threshold=0.6, y_mul_threshold=0.6, visualize=False):
+def point_extractor(source_path, min_contour_area=1000, x_mul_threshold=0.6, y_mul_threshold=0.6, visualize=False):
     cap = cv2.VideoCapture(source_path)
 
     # Object detection from stable camera
@@ -87,10 +89,9 @@ def point_extractor(source_path, min_contour_area=1000, convergence_threshold=80
     hist_range = [(0, max_x), (0, max_y)]
 
     num_frames = 0
-    convergence = False
     curr_x_mid_point = 0
     curr_y_mid_point = 0
-    while ret and (num_frames <= min_procesing_threshold or not convergence):
+    while ret:
         if visualize:
             img_copy = img.copy()
 
@@ -127,61 +128,8 @@ def point_extractor(source_path, min_contour_area=1000, convergence_threshold=80
             if hist is None:
                 hist = hist_frame
             else:
-                hist += hist_frame    
+                hist += hist_frame   
 
-            # Se obtiene el punto del eje x en el que se separan los dos clusters de detecciones
-            column_sums = np.sum(hist, axis=1)
-            start_idx = None
-            high_zones = []
-            x_mul_theshold_iter = x_mul_threshold
-            # TODO si pilla 3 y luego solo 1, que almacene las 3 por si es mejor recuperarlas
-            while x_mul_theshold_iter > 0 and len(high_zones) != 2:
-                high_zones = []
-                threshold = column_sums.max()*x_mul_theshold_iter # Igual se puede ir cambiando hasta dejar de tener 2
-                for i, x in enumerate(column_sums):
-                    if x > threshold:
-                        if start_idx is None:
-                            start_idx = i
-                    elif start_idx is not None:
-                        high_zones.append((start_idx, i-1))
-                        start_idx = None
-                if start_idx is not None:
-                    high_zones.append((start_idx, len(column_sums)-1))
-                x_mul_theshold_iter -= 0.1
-
-            if len(high_zones)>1:
-                high_zones = sorted(high_zones, key = lambda sub: abs(sub[1] - sub[0]), reverse=True)[::len(high_zones)-1] # Pilla el primer y el ultimo elemento para calcular el punto medio
-                x_mid_point = (high_zones[0][0]+high_zones[1][0])//2
-            else:
-                x_mid_point = curr_x_mid_point
-                # x_mid_point = hist_range[0][1]//2
-            # crear el mapa de calor con imshow
-        
-
-            # Se obtiene el punto del eje y que marca la zona superior de los clusters
-            row_sums = np.sum(hist, axis=0)
-            threshold = row_sums.max()*y_mul_threshold
-            y_mid_point = 0
-            for i, value in enumerate(row_sums):
-                if value >= threshold:
-                    y_mid_point = i
-                    break
-            y_mid_point = hist_range[1][1]- y_mid_point
-
-
-            if curr_x_mid_point == 0:
-                curr_x_mid_point = x_mid_point
-                curr_y_mid_point = y_mid_point
-            else:
-                dist = math.dist((curr_x_mid_point, curr_y_mid_point), (x_mid_point, y_mid_point))
-                if ( dist < convergence_threshold):
-                    convergence = True
-                else:
-                    convergence = False
-                    curr_x_mid_point = (num_frames * curr_x_mid_point + x_mid_point) / (num_frames + 1)
-                    curr_y_mid_point = (num_frames * curr_y_mid_point + y_mid_point) / (num_frames + 1)
-                    
-        
         if visualize:
             cv2.imshow('img', img_copy)
             #cv2.imshow('img', cv2.resize(img, (480,700)))
@@ -189,7 +137,28 @@ def point_extractor(source_path, min_contour_area=1000, convergence_threshold=80
             if k==27: break
         ret, img = cap.read()
 
-        num_frames += 1
+        num_frames += 1 
+
+    # Se obtiene el punto del eje x en el que se separan los dos clusters de detecciones
+    column_sums = np.sum(hist, axis=1)
+    smooth = gaussian_filter1d(column_sums, 10)
+    x_range = np.where(smooth > (0.2 * np.max(smooth)))[0]
+    interval = smooth[x_range[0]:x_range[-1]]
+    local_mins = argrelextrema(interval, np.less)
+    if len(local_mins[0]) == 0:
+        x_mid_point = max_x//2
+    else:
+        x_mid_point = np.where(smooth == np.min(smooth[local_mins+x_range[0]]))[0][0]
+
+    # Se obtiene el punto del eje y que marca la zona superior de los clusters
+    row_sums = np.sum(hist, axis=0)
+    threshold = row_sums.max()*y_mul_threshold
+    y_mid_point = 0
+    for i, value in enumerate(row_sums):
+        if value >= threshold:
+            y_mid_point = i
+            break
+    y_mid_point = hist_range[1][1]- y_mid_point
 
     if visualize:
         cap.release()
@@ -202,10 +171,11 @@ def point_extractor(source_path, min_contour_area=1000, convergence_threshold=80
     plt.title('Mapa de calor del movimiento en el video')
     plt.show() """
 
-    return x_mid_point, max_y-y_mid_point # La resta para poner el 0,0 arriba a la izquierda
+    return int(x_mid_point), int(max_y-y_mid_point) # La resta para poner el 0,0 arriba a la izquierda
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4'
-    print(point_extractor(source_path,convergence_threshold=1, visualize=False))
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss40_red2_AlejandroAlonso.mp4'
+    #source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/jugglingLab/ss4_red_JugglingLab.mp4'
+    print(point_extractor(source_path, visualize=False))
     # TODO limitar el tiempo, por ejemplo los 10 segundos del medio o algo así
