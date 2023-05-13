@@ -7,7 +7,7 @@ def file_initializer(system: str, ss:str, mode:str=''):
 
 
 def file_writer(file, frame: int, id: int, coords: tuple[int, int]):
-    if coords:
+    if coords and coords[0] != None and coords[1] != None:
         bb_left = coords[0]-bounding_box_size//2
         bb_top = coords[1]-bounding_box_size//2
         file.write("{},{},{},{},{},{},1,-1,-1,-1\n".format(frame,id,bb_left,bb_top,bounding_box_size,bounding_box_size))
@@ -21,7 +21,7 @@ def load_data_visualizer(path: str):
     with open(path) as file:
         for line in file:
             frame, id, bb_left, bb_top,bounding_box_size,bounding_box_size, _, _,_,_ = [int(i) for i in line.split(',')]
-            id = id-1
+            id = id
             if id in ret:
                 if len(ret[id]) == frame-1:
                     ret[id].append((bb_left+bounding_box_size//2,bb_top+bounding_box_size//2))

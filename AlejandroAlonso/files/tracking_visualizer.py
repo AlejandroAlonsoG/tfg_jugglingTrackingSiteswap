@@ -106,7 +106,7 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
                     cv2.putText(img, str(i+1), org_padding, cv2.FONT_HERSHEY_SIMPLEX, 2, colors_reorder[i], 4)
                     
                 except: pass
-            cv2.drawMarker(img, point, (0,0,0), cv2.MARKER_CROSS, thickness=4, markerSize=width)
+            cv2.drawMarker(img, point, (255,255,255), cv2.MARKER_CROSS, thickness=4, markerSize=width)
             num_frame +=1
             out.write(img)
             if visualize:
@@ -125,7 +125,7 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
     print("Vide saved in: ", out_name)
 
 if __name__ == "__main__":
-    ss = '31'
+    ss = '91'
     system = 'ColorTrackingMaxBalls'
     #system = 'BgSubstractionTracking'
     #system = 'ColorTracking'
@@ -137,6 +137,6 @@ if __name__ == "__main__":
     square_len=50
     trayectory_limit = 10
     file_mode=2
-    point = (507, 1046)
+    point = (553, 1180)
 
     tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, video_source=video_source, visualize=visualize, file_mode=file_mode, point=point)

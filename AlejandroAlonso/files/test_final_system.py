@@ -107,7 +107,7 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
             # Module "SS Extraction"
 
             # Seq_extraction
-            point = point_extractor(source_path)
+            point = point_extractor(source_path, min_contour_area=1750, y_mul_threshold=0.21)
             
             ids2 = load_data(tracking_dir+tracking_file_format.format(ss, tracking_system))
             throw_seq1_cuadrants, num_misses = seq_extraction_cuadrants(ids, point, 0,0)

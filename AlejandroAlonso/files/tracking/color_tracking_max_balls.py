@@ -86,7 +86,7 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=39, max_balls=3, visualize=False, save_data=-1):
+def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshold=39, max_balls=3, force_match=True, visualize=False, save_data=-1):
     system = "ColorTrackingMaxBalls"
     try:
         ss= re.search(r"ss(\d+)", source_path).group(1)
@@ -137,7 +137,7 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
             else:
                 # Actualizo los ids que tengo con las detecciones nuevas
                 if len(contours) > 0:
-                    kpu.update_ids(ids, contours, frame_number, max_balls=max_balls)
+                    kpu.update_ids(ids, contours, frame_number, max_balls=max_balls, force=force_match)
                 # En caso de haber perdido alguna detección, la actualizo con su predicción
                 kpu.update_lost_detections(ids)
 
@@ -195,9 +195,9 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
     return ret_ids
 
 if __name__ == "__main__":
-    max_balls = 2
+    max_balls = 7
     #source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/jugglingLab/ss31_red_JugglingLab.mp4'
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss31_red2_AlejandroAlonso.mp4'
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss7_red2_AlejandroAlonso.mp4'
     #color_range = 35,30,150,185,120,255
     color_range = 168,140,69,175,255,198 #red2_AlejandroAlonso to help with color_tracking
     #color_range = 0, 50, 0, 255, 255, 255

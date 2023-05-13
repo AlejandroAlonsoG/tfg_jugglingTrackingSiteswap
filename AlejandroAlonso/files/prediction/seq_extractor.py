@@ -109,7 +109,25 @@ def seq_extraction_cuadrants(ids, point, img_threshold, img_width):
 
     throw_ids = [elem[1] for elem in sorted(throw_frames, key=lambda x: x[0])]
 
-    return throw_ids, num_misses
+    tmp = []
+    for i in range(len(throw_order)-2):
+        tmp.append((throw_ids[i], throw_order[i]))
+
+    test = []
+
+    test.append((throw_ids[0], throw_order[0]))
+    for i in range(1,len(throw_order)-1):
+        if throw_order[i] == throw_order[i-1]:
+            test.append((throw_ids[i+1], throw_order[i+1]))
+        test.append((throw_ids[i], throw_order[i]))
+
+    for i in range(len(test)-1):
+        if test[i][1] == test[i+1][1]:
+            pass
+            
+
+    #return throw_ids, num_misses
+    return [elem[0] for elem in test], num_misses
 
 
 
