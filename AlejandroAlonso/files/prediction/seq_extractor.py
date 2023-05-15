@@ -127,7 +127,7 @@ def seq_extraction_cuadrants(ids, point, img_threshold, img_width):
             
 
     #return throw_ids, num_misses
-    return [elem[0] for elem in test], num_misses
+    return [elem[0] for elem in test], num_misses/len(test)
 
 
 

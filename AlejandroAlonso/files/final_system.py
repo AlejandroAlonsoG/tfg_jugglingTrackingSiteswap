@@ -76,7 +76,7 @@ def get_evaluation(tracking_path, gt_path, throw_seq, ss):
 
     return motp, mota, presence
 
-def execute(evaluate = False, tracking_system = "", color_range = None, max_balls = None, tracking_preprocessing = False, max_cuadrant_misses = 20, ss_test_numbers = 5, ss=None, save_data = -1):
+def execute(evaluate = False, tracking_system = "", color_range = None, max_balls = None, tracking_preprocessing = False, max_cuadrant_misses = 20, ss_test_numbers = 5, max_perido_threshold=1.5, decimal_round=3, ss=None, save_data = -1):
             source_path = dataset_dir + video_file_format.format(ss)
             # Module "Detection-tracking"
 
@@ -107,41 +107,56 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
             # Seq_extraction
             point = point_extractor(source_path)
             
-            throw_seq, num_misses = seq_extraction_cuadrants(ids, point, 0,0)
             ids = load_data(tracking_dir+tracking_file_format.format(ss, tracking_system))
-            throw_seq_cuadrants, num_misses = seq_extraction_cuadrants(ids, point, 0,0)
-            #if num_misses > max_cuadrant_misses:
-            throw_seq = seq_extraction(ids)
+            system_used = 'Cuadrants'
+            throw_seq, num_misses = seq_extraction_cuadrants(ids, point, 0,0)
+            if num_misses > max_cuadrant_misses:
+                system_used = 'Coords as a function'
+                throw_seq = seq_extraction(ids)
+            num_misses = round(num_misses, decimal_round)
             
             # SS extraction
-            ss_pred_traj = prediction(throw_seq, test_numbers=ss_test_numbers)
-            ss_pred_cuadrants = prediction(throw_seq_cuadrants, test_numbers=ss_test_numbers)
-
+            ss_pred = prediction(throw_seq, test_numbers=ss_test_numbers)
+            if system_used=='Cuadrants' and (ss_pred == 'NotFound' or len(ss_pred) > max_balls*max_perido_threshold):
+                throw_seq = seq_extraction(ids)
+                ss_pred = prediction(throw_seq, test_numbers=ss_test_numbers)
+                system_used = 'Coords as a function'
+            #ss_pred_cuadrants = prediction(throw_seq_cuadrants, test_numbers=ss_test_numbers)
 
             # Evaluation and return
-            works_traj = eq_ss(ss, ss_pred_traj)
-            works_cuadrants = eq_ss(ss, ss_pred_cuadrants)
+            works = eq_ss(ss, ss_pred)
+            #works_cuadrants = eq_ss(ss, ss_pred_cuadrants)
 
             if not evaluate:
-                return ss, '---', '---', '---', ss_pred_traj, ss_pred_cuadrants, works_traj, works_cuadrants, works_traj or works_cuadrants
+                if system_used == 'Cuadrants':
+                    return ss, '---', '---', '---', ss_pred, system_used, num_misses, works
+                else:
+                    return ss, '---', '---', '---', ss_pred, system_used, '---' , works
             else:
                 if save_data == -1:
                     raise Exception("evaluate and save_data = -1")
                 tracking_file_path = tracking_dir+tracking_file_format.format(ss, tracking_system)
                 gt_file_path = gt_dir+gt_file_format.format(ss)
                 motp, mota, presence = get_evaluation(tracking_file_path, gt_file_path, throw_seq, ss)
-                return ss, motp, mota, presence, ss_pred_traj, ss_pred_cuadrants, works_traj, works_cuadrants, works_traj or works_cuadrants
+                motp = round(motp, decimal_round)
+                mota = round(mota, decimal_round)
+                presence = round(presence, decimal_round)
+                if system_used == 'Cuadrants':
+                    return ss, motp, mota, presence, ss_pred, system_used, num_misses, works
+                else:
+                    return ss, motp, mota, presence, ss_pred, system_used, '---', works
+
 
 if __name__ == "__main__":
-    siteswaps = ['1', '40', '31', '4', '330', '3', '423', '441', '531', '51', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6', '7']
+    siteswaps = ['1', '40', '31', '4', '330', '3', '423', '441', '531', '51', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6']
     tracking_systems = ['ColorTrackingMaxBalls', 'ColorTrackingV0', 'BgSubstractionMaxBalls', 'BgSubstraction']
     color_range = 168,140,69,175,255,198
     table = PrettyTable()
-    table.field_names = ["ss", "MOTP", "MOTA", "Presence", "Prediction trajectories", "Prediction cuadrants", "Works trajectories", "Work cuadrants", "Works any"]
+    table.field_names = ["ss", "MOTP", "MOTA", "Presence", "Prediction", "System used", "Num misses (cuadrants)", "Works"]
     for idx, ss in enumerate(siteswaps):
         print(idx+1, "/", len(siteswaps))
         max_balls = int(sum(int(char) for char in ss) / len(ss))
-        res = execute(evaluate = False, tracking_system = tracking_systems[0], color_range = color_range, max_balls = max_balls, tracking_preprocessing = False, max_cuadrant_misses = 8, ss_test_numbers = 5, ss=ss, save_data = 2)
+        res = execute(evaluate = True, tracking_system = tracking_systems[0], color_range = color_range, max_balls = max_balls, tracking_preprocessing = False, max_cuadrant_misses = 0.35, ss_test_numbers = 5, ss=ss, save_data = 2)
         table.add_row(res)
     print(table)
 

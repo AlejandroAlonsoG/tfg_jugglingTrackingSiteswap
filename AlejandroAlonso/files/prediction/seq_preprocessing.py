@@ -70,7 +70,7 @@ def fill_contours(contours):
     return filled_contours
 
 
-def point_extractor(source_path, min_contour_area=2500, x_mul_threshold=0.6, y_mul_threshold=0.6, visualize=False):
+def point_extractor(source_path, min_contour_area=2500, x_mul_threshold=0.6, y_mul_threshold=0.21, visualize=False):
     cap = cv2.VideoCapture(source_path)
 
     # Object detection from stable camera
