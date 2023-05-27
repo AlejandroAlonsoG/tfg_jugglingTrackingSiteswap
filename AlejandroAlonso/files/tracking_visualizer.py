@@ -125,10 +125,10 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
     print("Vide saved in: ", out_name)
 
 if __name__ == "__main__":
-    ss = '91'
+    ss = '3'
     system = 'ColorTrackingMaxBalls'
     #system = 'BgSubstractionTracking'
-    #system = 'ColorTracking'
+    #system = 'ColorTrackingV0'
 
     video_source = 'red2_AlejandroAlonso'
     #video_source = 'red_JugglingLab'
@@ -137,6 +137,6 @@ if __name__ == "__main__":
     square_len=50
     trayectory_limit = 10
     file_mode=2
-    point = (553, 1180)
+    point = None
 
     tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, video_source=video_source, visualize=visualize, file_mode=file_mode, point=point)

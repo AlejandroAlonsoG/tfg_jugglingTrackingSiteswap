@@ -88,7 +88,7 @@ def contours_non_max_suppression(contours, threshold_value, use_distance=True):
 
     return contours
 
-def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, visualize=False, system="ColorTracking", save_data=-1):
+def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, visualize=False, system="ColorTrackingV0", save_data=-1):
     try:
         ss= re.search(r"ss(\d+)", source_path).group(1)
     except:
@@ -156,7 +156,6 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
                         cv2.putText(img_copy, "Id {}".format(key), (int(x1 + 15), int(y1 + 10)), 0, 0.5, (0, 0, 255), 2)
 
         frame_number += 1
-        print("t-", frame_number)
         #show the image and wait 1080x1920
         #imS = cv2.resize(img_copy, (540, 960))
         if visualize:
@@ -202,4 +201,4 @@ if __name__ == "__main__":
     #color_range = 35,30,150,185,120,255
     #color_range = color_extractor(source_path)
     color_range = 168,140,69,175,255,198
-    color_tracking(source_path, color_range, system="ColorTracking",save_data=2, visualize=False)
+    color_tracking(source_path, color_range, system="ColorTrackingV0",save_data=2, visualize=False)

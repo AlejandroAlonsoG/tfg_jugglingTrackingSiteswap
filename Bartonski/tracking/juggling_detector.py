@@ -8,14 +8,6 @@ import json
 import numpy as np
 import configuration
 
-#*edit*
-import sys
-sys.path.insert(0, '../../AlejandroAlonso/excel_utils')
-import excel_utils
-system = "bartonski"
-ss = "short"
-#*edit*
-
 
 # Arguments and Configuration --------------------------------------------------
 
@@ -170,7 +162,6 @@ last_frame_objects = []
 object_id=0
 tracking_threshold=o.tracking_threshold
 def track( contours, read_masks ):
-    #*edit*print( f"contours: {contours}")
     frame_objects = []
     global object_id
     global last_frame_objects
@@ -207,7 +198,6 @@ def track( contours, read_masks ):
 
 ret, frame = cap.read()
 
-book = excel_utils.book_initializer(system,ss) #*edit*
 while ret and current_frame <= o.end_frame: # Mientras la camara devuelva algo y no hayamos llegado al final opcionalmente especificado por el usuario
     if current_frame < o.start_frame: # Si no hemos llegado al principio opcionalmente especificado por el usuario pasa frames hasta llegar
         ret, frame = cap.read()
@@ -215,7 +205,6 @@ while ret and current_frame <= o.end_frame: # Mientras la camara devuelva algo y
         continue
 
     throw_roi = frame[0 : o.throw_roi_bottom, throw_roi_left: throw_roi_right ] # Se define el roi como el cuadrado entre esos puntos. Si no se especifica nada al principio valen lo que la imagen
-    #*edit*print( f"current_frame: {current_frame}")
     if o.blur_radius is not None: # Si no se ha especificado argumento pues pasando
         blur_diameter = o.blur_radius * 2 + 1
         mask_input = cv2.GaussianBlur(throw_roi, (blur_diameter, blur_diameter), 0)
@@ -238,7 +227,6 @@ while ret and current_frame <= o.end_frame: # Mientras la camara devuelva algo y
         show_grid( image )
 
     tracked_objects=track(contours, read_masks ) # Read_masks tiene las mascaras para las bolas y cada una de las manos
-    #*edit*print(f"tracked_objects: {tracked_objects}")
     # tracked_objects basicamente es un array de diccionarios donde cada diccionario es sobre un objeto (contorno suficientemente grande) que se ha encontrado en el frame
     # Creo que este frame lo que hace basicamente es pintar todo
     for to in tracked_objects:
@@ -255,8 +243,6 @@ while ret and current_frame <= o.end_frame: # Mientras la camara devuelva algo y
             image = cv2.bitwise_or(image, trails_image)
         cv2.drawContours(image, [to["contour"]], -1, (0, 255, 0), 2)
         oid=to["object_id"]
-        #*edit*print(f"to[object_id]: {oid} to[center] {to['center']}")
-        excel_utils.book_writer(book, current_frame, oid, to['center']) #*edit*
         object_labels( image, f"{to['object_id']} {to['type']}", to["center"], 0, 2)
         if o.area_labels:
             label( image, to["area"], to["center"], 20, 3 )
@@ -285,7 +271,6 @@ if left_hand_mask is not None:
 if right_hand_mask is not None:
     cv2.imwrite( right_hand_mask, trails_write_mask['right_hand'] )
 
-excel_utils.book_saver(book,system,ss, sanitize=False)  #*edit*
 
 cap.release()
 out.release()

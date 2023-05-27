@@ -1,6 +1,6 @@
 from tracking.preprocessing.color_extractor import color_extractor
 from tracking.color_tracking_max_balls import color_tracking_max_balls
-from tracking.color_tracking_v0 import color_tracking
+from tracking.color_tracking_v0 import color_tracking as color_trackingV0
 from tracking.bg_substraction_tracking_max_balls import bg_substraction_tracking_max_balls
 from tracking.bg_substraction_tracking import bg_substraction_tracking
 from prediction.seq_extractor_tmp import seq_extraction, seq_extraction_cuadrants
@@ -20,14 +20,10 @@ video_file_format = 'ss{}_red2_AlejandroAlonso.mp4' # ss
 gt_file_format = "{}_manual2.txt" # ss
 tracking_file_format = '{}_{}.txt' # ss, tracking_system
 
-def eq_ss(str1, str2):
-    if len(str1) != len(str2):
-        return False
-    else:
-        str1_str1 = str1 + str1
-        return str2 in str1_str1
+def format_motp(motp):
+  return '{:.2%}'.format(1 - motp)
 
-def motMetricsEnhancedCalculator(gtSource, tSource):
+def motMetricsEnhancedCalculator(ss, gtSource, tSource, decimal_round):
   # import required packages
   import motmetrics as mm
   import numpy as np
@@ -61,23 +57,36 @@ def motMetricsEnhancedCalculator(gtSource, tSource):
 
   mh = mm.metrics.create()
 
-  summary = mh.compute(acc, metrics=['mota', 'motp'])
-
+  """ summary = mh.compute(acc, metrics=['num_frames', 'idf1', 'idp', 'idr', \
+                                     'recall', 'precision', 'num_objects', \
+                                     'mostly_tracked', 'partially_tracked', \
+                                     'mostly_lost', 'num_false_positives', \
+                                     'num_misses', 'num_switches', \
+                                     'num_fragmentations', 'mota', 'motp' \
+                                    ], \
+                      name='acc') """
+  
+  summary = mh.compute(acc, metrics=['num_fragmentations', 'num_misses', 'num_false_positives', 'num_switches', \
+                                     'num_unique_objects', 'mostly_lost', 'partially_tracked', 'mostly_tracked', \
+                                     'recall', 'precision', 'mota', 'motp'
+                                    ])
+  
+  num_fragmentations = summary['num_fragmentations'][0]
+  num_misses = summary['num_misses'][0]
+  num_false_positives = summary['num_false_positives'][0]
+  num_switches = summary['num_switches'][0]
+  num_unique_objects = summary['num_unique_objects'][0]
+  mostly_lost = summary['mostly_lost'][0]
+  mostly_tracked = summary['mostly_tracked'][0]
+  partially_tracked = summary['partially_tracked'][0]
+  recall = summary['recall'][0]
+  precision = summary['precision'][0]
   motp = (1 - summary['motp'][0])
   mota = summary['mota'][0]
 
-  return motp, mota
+  return ss, num_fragmentations,num_misses,num_false_positives,num_switches,num_unique_objects,mostly_lost,partially_tracked,mostly_tracked,round(recall,decimal_round),round(precision,decimal_round),round(mota,decimal_round),round(motp,decimal_round)
 
-def get_evaluation(tracking_path, gt_path, full_ss, ss):
-    motp, mota = motMetricsEnhancedCalculator(gt_path, tracking_path)
-    try:
-        presence = full_ss.count(ss)/(len(full_ss)/len(ss))
-    except:
-        presence = -1
-
-    return motp, mota, presence
-
-def execute(evaluate = False, tracking_system = "", color_range = None, max_balls = None, tracking_preprocessing = False, max_cuadrant_misses = 0.35, ss_test_numbers = 5, max_perido_threshold=1.5, decimal_round=3, ss=None, save_data = -1):
+def execute(tracking_system = "", color_range = None, max_balls = None, tracking_preprocessing = False, decimal_round=3, ss=None, save_data = -1):
             source_path = dataset_dir + video_file_format.format(ss)
             # Module "Detection-tracking"
 
@@ -93,7 +102,7 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
             elif tracking_system == "ColorTrackingV0":
                 if color_range == None:
                      raise Exception("ColorTrackingV0 - Wrong parameters")
-                color_tracking(source_path, color_range, visualize=False, save_data=save_data)
+                color_trackingV0(source_path, color_range, visualize=False, save_data=save_data)
             elif tracking_system == "BgSubstractionMaxBalls":
                 if max_balls == None:
                     raise Exception("BgSubstractionMaxBalls - Wrong parameters")
@@ -103,64 +112,24 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
             else:
                 raise Exception("Wrong tracking system")
 
-            # Module "SS Extraction"
-
-            # Seq_extraction
-            point = point_extractor(source_path)
-            
-            ids = load_data(tracking_dir+tracking_file_format.format(ss, tracking_system))
-            system_used = 'Cuadrants'
-            throw_seq, num_misses = seq_extraction_cuadrants(ids, point, 0,0)
-            if num_misses > max_cuadrant_misses:
-                system_used = 'Coords as a function'
-                throw_seq = seq_extraction(ids)
-            num_misses = round(num_misses, decimal_round)
-            
-            # SS extraction
-            ss_pred, full_ss = prediction(throw_seq, num_balls=max_balls, test_numbers=ss_test_numbers)
-            if system_used=='Cuadrants' and (ss_pred == 'NotFound' or len(ss_pred) > max_balls*max_perido_threshold):
-                throw_seq = seq_extraction(ids)
-                ss_pred, full_ss = prediction(throw_seq, num_balls=max_balls, test_numbers=ss_test_numbers)
-                system_used = 'Coords as a function'
-            #ss_pred_cuadrants = prediction(throw_seq_cuadrants, test_numbers=ss_test_numbers)
-
-            # Evaluation and return
-            works = eq_ss(ss, ss_pred)
-            #works_cuadrants = eq_ss(ss, ss_pred_cuadrants)
-
-            print("Finished: ", ss)
-            if not evaluate:
-                if system_used == 'Cuadrants':
-                    return ss, '---', '---', '---', ss_pred, system_used, num_misses, works
-                else:
-                    return ss, '---', '---', '---', ss_pred, system_used, '---' , works
-            else:
-                if save_data == -1:
-                    raise Exception("evaluate and save_data = -1")
-                tracking_file_path = tracking_dir+tracking_file_format.format(ss, tracking_system)
-                gt_file_path = gt_dir+gt_file_format.format(ss)
-                motp, mota, presence = get_evaluation(tracking_file_path, gt_file_path, full_ss, ss)
-                motp = round(motp, decimal_round)
-                mota = round(mota, decimal_round)
-                presence = round(presence, decimal_round)
-                if system_used == 'Cuadrants':
-                    return ss, motp, mota, presence, ss_pred, system_used, num_misses, works
-                else:
-                    return ss, motp, mota, presence, ss_pred, system_used, '---', works
+            tracking_file_path = tracking_dir+tracking_file_format.format(ss, tracking_system)
+            gt_file_path = gt_dir+gt_file_format.format(ss)
+            print("Terminado: ", ss)
+            return motMetricsEnhancedCalculator(ss, gt_file_path, tracking_file_path, decimal_round)
 
 
 if __name__ == "__main__":
-    siteswaps = ['1', '31', '330', '40', '3', '423', '441', '531', '51', '4', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6']
-    #siteswaps = ['1', '3', '423', '441', '5']
+    #siteswaps = ['1', '40', '31', '4', '330', '3', '423', '441', '531', '51', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6']
+    siteswaps = ['1', '3', '423', '441', '5']
     tracking_systems = ['ColorTrackingMaxBalls', 'ColorTrackingV0', 'BgSubstractionMaxBalls', 'BgSubstractionV0']
     color_range = 168,140,69,175,255,198
     #color_range = 0, 50, 0, 255, 255, 255
     table = PrettyTable()
-    table.field_names = ["ss", "MOTP", "MOTA", "Presence", "Prediction", "System used", "Num misses (cuadrants)", "Works"]
+    table.field_names = ["ss", "Track perdido", "Detec. Perdidas", "Detec. Ruido", "ID Swap", "Num Bolas", "<20\%", "20-80\%", ">80\%", "Recall", "Precision", "MOTA", "MOTP"]
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Para cada valor de 'param' creamos un objeto Future que ejecuta la función 'test'
-        futures = {executor.submit(execute, True, tracking_systems[0], color_range, int(sum(int(char) for char in ss) / len(ss)), False, 0.49, 5, 1.5, 3, ss, 2): (ss) for ss in siteswaps}
+        futures = {executor.submit(execute, tracking_systems[0], color_range, int(sum(int(char) for char in ss) / len(ss)), False, 3, ss, 2): (ss) for ss in siteswaps}
 
         # Esperamos a que todas las ejecuciones de la función 'test' terminen
         concurrent.futures.wait(futures)

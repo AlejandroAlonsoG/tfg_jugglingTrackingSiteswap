@@ -41,7 +41,6 @@ def color_extractor(source_path, min_contour_area=1000, h_range=2, sv_range1=75,
                         center = get_center(c)
                         cx, cy = center
                         # Pilla los colores de los píxeles en la region que sea
-                        print(current_frame)
                         for i in range(-size//2,size//2 + 1):
                             for j in range(-size//2,size//2 + 1):
                                 (b,g,r) = image[cy+i, cx+j]
@@ -53,7 +52,6 @@ def color_extractor(source_path, min_contour_area=1000, h_range=2, sv_range1=75,
 
         ret, frame = cap.read()
         current_frame += 1
-        print(current_frame)
 
     # Pilla el color más repetido y lo pasa a hsv
     (b,g,r) = max(color_dict, key=color_dict.get)
@@ -167,7 +165,6 @@ def color_extractor_test2(source_path, min_contour_area=1000, h_range=2, sv_rang
                         center = get_center(c)
                         cx, cy = center
                         # Pilla los colores de los píxeles en la region que sea
-                        print(current_frame)
                         for i in range(-size//2,size//2 + 1):
                             for j in range(-size//2,size//2 + 1):
                                 (b,g,r) = image[cy+i, cx+j]
@@ -178,7 +175,6 @@ def color_extractor_test2(source_path, min_contour_area=1000, h_range=2, sv_rang
 
         ret, frame = cap.read()
         current_frame += 1
-        print(current_frame)
 
     # Pilla el color más repetido y lo pasa a hsv
     (b,g,r) = total_b//(current_frame*25), total_g//(current_frame*25), total_r//(current_frame*25)

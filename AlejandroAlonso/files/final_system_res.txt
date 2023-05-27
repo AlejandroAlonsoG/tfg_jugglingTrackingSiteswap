@@ -2,15 +2,15 @@
 |   ss  |  MOTP |  MOTA | Presence | Prediction |     System used      | Num misses (cuadrants) | Works |
 +-------+-------+-------+----------+------------+----------------------+------------------------+-------+
 |   1   | 0.843 | 0.998 |  0.952   |     1      |      Cuadrants       |          0.0           |  True |
-|   40  | 0.834 | 0.977 |  0.939   |     40     |      Cuadrants       |          0.49          |  True |
 |   31  | 0.802 | 0.997 |  0.923   |     31     |      Cuadrants       |          0.0           |  True |
-|   4   | 0.805 | 0.949 |  0.615   |     4      | Coords as a function |          ---           |  True |
+|   40  | 0.834 | 0.977 |  0.939   |     40     |      Cuadrants       |          0.49          |  True |
 |  330  | 0.826 | 0.997 |   0.0    |    123     |      Cuadrants       |         0.312          | False |
 |   3   | 0.809 | 0.976 |   0.87   |     3      |      Cuadrants       |          0.0           |  True |
 |  423  |  0.81 | 0.982 |  0.733   |    234     |      Cuadrants       |         0.312          |  True |
 |  441  | 0.804 | 0.978 |  0.776   |    414     |      Cuadrants       |         0.017          |  True |
 |  531  |  0.77 |  0.96 |  0.675   |    315     |      Cuadrants       |         0.024          |  True |
 |   51  | 0.786 | 0.946 |  0.808   |     51     |      Cuadrants       |         0.074          |  True |
+|   4   | 0.805 | 0.949 |  0.615   |     4      | Coords as a function |          ---           |  True |
 |  633  | 0.775 | 0.906 |  0.783   |    633     | Coords as a function |          ---           |  True |
 |  5551 | 0.776 | 0.977 |  0.564   |    5155    |      Cuadrants       |         0.087          |  True |
 |  525  | 0.797 | 0.958 |  0.909   |    525     |      Cuadrants       |         0.324          |  True |

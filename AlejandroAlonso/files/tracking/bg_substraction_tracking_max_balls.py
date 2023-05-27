@@ -25,7 +25,7 @@ def bg_substraction_tracking_max_balls(source_path, min_contour_area=2000, enclo
         ss= re.search(r"ss(\d+)", source_path).group(1)
     except:
         ss="Unknown"
-    system = "BgSubstractionTrackingMaxBalls"
+    system = "BgSubstractionMaxBalls"
 
     cap = cv2.VideoCapture(source_path)
 
@@ -143,5 +143,5 @@ def bg_substraction_tracking_max_balls(source_path, min_contour_area=2000, enclo
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss1_red_AlejandroAlonso.mp4'
-    bg_substraction_tracking_max_balls(source_path, max_balls=1, visualize=False, save_data=2)
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss441_red2_AlejandroAlonso.mp4'
+    bg_substraction_tracking_max_balls(source_path, max_balls=3, visualize=True, save_data=-1)

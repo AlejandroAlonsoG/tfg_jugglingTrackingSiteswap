@@ -25,7 +25,7 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_
         ss= re.search(r"ss(\d+)", source_path).group(1)
     except:
         ss="Unknown"
-    system = "BgSubstractionTracking"
+    system = "BgSubstractionV0"
 
     cap = cv2.VideoCapture(source_path)
 
@@ -140,5 +140,5 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss441_red2_AlejandroAlonso.mp4'
-    bg_substraction_tracking(source_path,visualize=False, save_data=2)
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss91_red2_AlejandroAlonso.mp4'
+    bg_substraction_tracking(source_path,visualize=True, save_data=2)
