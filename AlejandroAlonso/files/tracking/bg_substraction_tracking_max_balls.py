@@ -20,7 +20,7 @@ def contour_center(c):
 
 
 # Pilla el color más detectado y hace un rango desde ahi
-def bg_substraction_tracking_max_balls(source_path, min_contour_area=2000, enclosing_area_diff=0.5, arc_const=0.1, max_balls=3, save_data=-1, visualize=False):
+def bg_substraction_tracking_max_balls(source_path, min_contour_area=1000, enclosing_area_diff=0.5, arc_const=0.1, max_balls=3, save_data=-1, visualize=False):
     try:
         ss= re.search(r"ss(\d+)", source_path).group(1)
     except:
@@ -76,12 +76,12 @@ def bg_substraction_tracking_max_balls(source_path, min_contour_area=2000, enclo
             if len(ids) == 0:
                 # Creo los ids de cada contorno
                 for c in circle_contours:
-                    new_id_dict = kpu.init_id_dict(c, current_frame)
+                    new_id_dict = kpu.init_id_dict(c, current_frame, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1)  
                     ids[len(ids)] = new_id_dict
             else:
-                kpu.update_ids(ids, circle_contours, current_frame, max_balls=max_balls)
+                kpu.update_ids(ids, circle_contours, current_frame, max_balls=max_balls, force=True, dt=0.1, u_x=15, u_y=30, std_acc=30, x_std_meas=0.1, y_std_meas=0.1)
                 # En caso de haber perdido alguna detección, la actualizo con su predicción
-                kpu.update_lost_detections(ids)             
+                kpu.update_lost_detections(ids)       
 
         for key in ids:
             elem = ids[key]

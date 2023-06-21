@@ -40,7 +40,7 @@ def cambio_direccion(coord_anterior, coord_actual, coord_posterior):
     pendiente_post = (coord_posterior - coord_actual)
     return pendiente_ant * pendiente_post <= 0
 
-def seq_extraction_cuadrants(ids, point, img_threshold, img_width):
+def seq_extraction_cuadrants(ids, point, img_threshold=0, img_width=0):
     keys_info = {}
     for key in ids:
         tmp = {}

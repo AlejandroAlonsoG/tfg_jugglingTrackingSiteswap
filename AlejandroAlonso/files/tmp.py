@@ -87,26 +87,19 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
                     coords_x, coords_y = data[i][num_frame]
                     coords_x_padding = coords_x + width
                     if len(hist[i]) <= trayectory_limit:
-                        hist[i].append((coords_x_padding, coords_y))
+                        hist[i].append((coords_x, coords_y))
                     else:
                         hist[i].pop(0)
-                        hist[i].append((coords_x_padding, coords_y))
+                        hist[i].append((coords_x, coords_y))
                     
+                    cv2.circle(img, (coords_x,coords_y), 20, colors_reorder[i], -1)
                     for coord in hist[i]:
-                        cv2.circle(img, coord, 10, colors_reorder[i], -1)
+                        cv2.circle(img, coord, 8, colors_reorder[i], -1)
                     for index, item in enumerate(hist[i]): 
                         if index == len(hist[i]) -1:
                             break
                         cv2.line(img, item, hist[i][index + 1], colors_reorder[i], 8) 
 
-                    start_point = (coords_x-square_len//2, coords_y-square_len//2)
-                    end_point = (coords_x+square_len//2, coords_y+square_len//2)
-                    cv2.rectangle(img, start_point, end_point, colors_reorder[i], 4)
-
-                    org = (coords_x+square_len//2+2, coords_y-square_len//2+2)
-                    cv2.putText(img, str(i+1), org, cv2.FONT_HERSHEY_SIMPLEX, 2, colors_reorder[i], 4)
-                    org_padding = (coords_x+width+square_len//2+2, coords_y-square_len//2+2)
-                    cv2.putText(img, str(i+1), org_padding, cv2.FONT_HERSHEY_SIMPLEX, 2, colors_reorder[i], 4)
                     
                 except: pass
             cv2.drawMarker(img, point, (255,255,255), cv2.MARKER_CROSS, thickness=4, markerSize=width)
@@ -128,7 +121,7 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
     print("Vide saved in: ", out_name)
 
 if __name__ == "__main__":
-    ss = '5'
+    ss = '3'
     system = 'ColorTrackingMaxBalls'
     #system = 'BgSubstractionTracking'
     #system = 'ColorTrackingV0'
@@ -138,7 +131,7 @@ if __name__ == "__main__":
 
     visualize=True
     square_len=50
-    trayectory_limit = 12
+    trayectory_limit = 26
     file_mode=2
     point = None
 

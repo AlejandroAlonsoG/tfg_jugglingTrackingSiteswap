@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Para cada valor de 'param' creamos un objeto Future que ejecuta la función 'test'
-        futures = {executor.submit(execute, tracking_systems[0], color_range, int(sum(int(char) for char in ss) / len(ss)), False, 3, ss, 2): (ss) for ss in siteswaps}
+        futures = {executor.submit(execute, tracking_systems[2], color_range, int(sum(int(char) for char in ss) / len(ss)), False, 3, ss, 2): (ss) for ss in siteswaps}
 
         # Esperamos a que todas las ejecuciones de la función 'test' terminen
         concurrent.futures.wait(futures)

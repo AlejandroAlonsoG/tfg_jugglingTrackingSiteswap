@@ -122,6 +122,8 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
                 throw_seq = seq_extraction(ids)
                 ss_pred, full_ss = prediction(throw_seq, num_balls=max_balls, test_numbers=ss_test_numbers)
                 system_used = 'Coords as a function'
+                if len(ss_pred) > max_balls*max_perido_threshold:
+                    ss_pred = 'NotFound'
             #ss_pred_cuadrants = prediction(throw_seq_cuadrants, test_numbers=ss_test_numbers)
 
             # Evaluation and return
@@ -150,8 +152,9 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
 
 
 if __name__ == "__main__":
-    siteswaps = ['1', '31', '330', '40', '3', '423', '441', '531', '51', '4', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6']
+    #siteswaps = ['1', '31', '330', '40', '3', '423', '441', '531', '51', '4', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6']
     #siteswaps = ['1', '3', '423', '441', '5']
+    siteswaps = ['561']
     tracking_systems = ['ColorTrackingMaxBalls', 'ColorTrackingV0', 'BgSubstractionMaxBalls', 'BgSubstractionV0']
     color_range = 168,140,69,175,255,198
     #color_range = 0, 50, 0, 255, 255, 255
