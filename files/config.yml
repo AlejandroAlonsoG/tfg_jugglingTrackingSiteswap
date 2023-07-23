@@ -1,0 +1,87 @@
+# List of siteswaps (to change in the file name)
+siteswaps:
+  - "1"
+  # - "31"
+  # - "330"
+  # - "40"
+  - "3"
+  # - "423"
+  # - "441"
+  # - "531"
+  # - "51"
+  # - "4"
+  # - "633"
+  # - "5551"
+  # - "525"
+  # - "534"
+  # - "66611"
+  # - "561"
+  # - "75314"
+  - "5"
+  # - "645"
+  # - "744"
+  # - "91"
+  # - "6"
+
+# List of tracking systems
+tracking_systems:
+  - "ColorTrackingMaxBalls"  # Colorspaces sysyem. The one that gave better results. Requires color range
+  - "ColorTrackingV0"        # First version of colorspaces tracking. Requires color range
+  - "BgSubstractionMaxBalls" # Bg subtraction (first version) with the max_balls parameter
+  - "BgSubstractionV0"       # Bg subtraction (first version)
+
+# Mask color range
+color_range: 168, 140, 69, 175, 255, 198  # h1, s1, v1, h2, s2, v2
+
+# List of names in the result table column
+table_field_names:
+  - "ss"
+  - "MOTP"
+  - "MOTA"
+  - "Presence"
+  - "Prediction"
+  - "System used"
+  - "Num misses (cuadrants)"
+  - "Works"
+
+# Boolean that indicates if you want to evaluate each iteration
+evaluate: True
+
+# Boolean that indicates if you want to obtain the color range automatically
+tracking_preprocessing: False
+
+# Max tasa de misses to use the cuadrants approach
+max_cuadrant_misses: 0.49
+
+# Number of tries to test the period of a string
+ss_test_numbers: 5
+
+# Max period of a siteswap in function of the number of balls
+max_perido_threshold: 1.5
+
+# Number of decimals to round (decimal_round)
+decimal_round: 3
+
+# Selection of how save the data
+# -1: Don't save the data
+# 1: Excel
+# 2: mot16
+save_data: 2
+
+# Directory of the GroundTruth
+gt_dir: '/home/alex/tfg_jugglingTrackingSiteswap/results/mot16/GroundTruth/'
+
+# Directory where the tracking files are saved
+tracking_dir: '/home/alex/tfg_jugglingTrackingSiteswap/results/mot16/Tracking/'
+
+# Directory of the dataset
+dataset_dir: '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
+
+# Format of the name of the video files
+video_file_format: 'ss{}_red2_AlejandroAlonso.mp4'
+
+# Format of the name of the GroundTruth files
+gt_file_format: "{}_manual2.txt"
+
+# Format of the name of the tracking files
+tracking_file_format: '{}_{}.txt'
