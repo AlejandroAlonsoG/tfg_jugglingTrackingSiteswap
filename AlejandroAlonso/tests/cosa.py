@@ -1,63 +1,47 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.interpolate import CubicSpline
+import cv2
 
-def plot_curve(p1, p2, p3):
-    # Crear los puntos intermedios para la interpolación
-    t = [0, 0.5, 1]
-    x = [p1[0], p2[0], p3[0]]
-    y = [p1[1], p2[1], p3[1]]
+def bg_substraction_tracking_max_balls(source_path, min_contour_area=1000, enclosing_area_diff=0.5, arc_const=0.1, max_balls=3, save_data=-1, visualize=False, output_path=None):
+    cap = cv2.VideoCapture(source_path)
 
-    # Realizar la interpolación cúbica
-    cs = CubicSpline(t, np.vstack((x, y)).T, bc_type='natural')
+    # Object detection from stable camera
+    object_detector = cv2.createBackgroundSubtractorMOG2(
+                        history=100,
+                        varThreshold=10)
 
-    # Generar puntos en la curva
-    t_new = np.linspace(0, 1, 100)
-    curve = cs(t_new)
+    ret, img = cap.read()
+    if visualize:
+        cv2.namedWindow('img', cv2.WINDOW_NORMAL)
 
-    # Dibujar la curva
-    color = 'red' if p1[0] % 2 == 0 else 'blue'
-    plt.plot(curve[:, 0], curve[:, 1], color)
+    if save_data != -1:
+        ret, img = cap.read()
+        mask = object_detector.apply(img)
+        width = mask.shape[0]
+        height = mask.shape[1]
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter('/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/videos/tmp2.mp4', fourcc, fps, (width, height))
 
-# Puntos hardcodeados para las 6 curvas
-points_list = [
-    [(0, 0), (2, 0.5), (4, 0)],
-    [(1, 0), (2.5, 0.5), (4, 0)]
-]
+    while ret:
+        ret, img = cap.read()
+        mask = object_detector.apply(img)
 
-# Crear la figura
-plt.figure(figsize=(8, 6))
+        if visualize and ret:
+            cv2.imshow('img', mask)
+            k = cv2.waitKey(0)
+            if k == 27:
+                break
 
-# Generar las 6 curvas en la misma gráfica
-for points in points_list:
-    plot_curve(*points)
+        if save_data != -1:
+            out.write(mask)
 
-x = np.linspace(0, 5, 100)
+    if visualize:
+        cv2.destroyAllWindows()
+    cap.release()
 
-# Dibujar la línea horizontal
-plt.plot(x, np.zeros_like(x), color='black')
+    if save_data != -1:
+        out.release()
 
-# Agregar un punto encima de la línea
-
-# Agregar texto para los números
-plt.text(-0.5, -0.05, "Tiempo:", ha='center')
-for i in range(6):
-    plt.text(i, -0.05, str(i), ha='center')
-    plt.plot(i, 0, marker='o', color='black')
-plt.plot(0, 0, marker='o', color='red')
-plt.plot(1, 0, marker='o', color='blue')
-plt.plot(4, 0, marker='o', color='purple')
-    
-
-# Etiquetas y título
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.title('Curvas')
-plt.xlim(-1,6)
-plt.ylim(-0.2,0.6)
-
-plt.plot([], [], color='red', label='Lanzamiento mano derecha')
-plt.plot([], [], color='blue', label='Lanzamiento mano izquierda')
-plt.legend()
-# Mostrar la gráfica resultante
-plt.show()
+if __name__ == "__main__":
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss5_red2_AlejandroAlonso.mp4'
+    output_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/output.mp4'
+    bg_substraction_tracking_max_balls(source_path, max_balls=5, visualize=True, save_data=2, output_path=output_path)

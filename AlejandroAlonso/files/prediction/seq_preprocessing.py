@@ -122,7 +122,7 @@ def point_extractor(source_path, min_contour_area=2500, x_mul_threshold=0.6, y_m
         if len(coords) > 0:
             x_coords, y_coords = zip(*coords)
     
-            hist_frame, _, _ = np.histogram2d(x_coords, y_coords, bins=bins, range=hist_range)
+            hist_frame, xedges, yedges = np.histogram2d(x_coords, y_coords, bins=bins, range=hist_range)
             if hist is None:
                 hist = hist_frame
             else:

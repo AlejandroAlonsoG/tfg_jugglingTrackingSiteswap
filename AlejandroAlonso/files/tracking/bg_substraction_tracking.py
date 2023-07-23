@@ -101,7 +101,7 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_
         if visualize:
             cv2.imshow('img', img_copy)
             #cv2.imshow('img', cv2.resize(img, (480,700)))
-            k=cv2.waitKey(0)
+            k=cv2.waitKey(1)
             if k==27: break
 
    
@@ -140,5 +140,5 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss91_red2_AlejandroAlonso.mp4'
-    bg_substraction_tracking(source_path,visualize=True, save_data=2)
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/instagram/ss534_benjamin_klopcic.mp4'
+    bg_substraction_tracking(source_path,visualize=True, save_data=-1)

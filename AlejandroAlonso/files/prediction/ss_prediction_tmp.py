@@ -40,6 +40,7 @@ def get_min_period(sequence,max_period,test_numb):
 
 def get_full_ss_string(throw_order):
     ss = ''
+    next_throw=0
     for i in range(len(throw_order)):
         #list.index(element, start, end), busca la bola i a partir del indice i (la primera aparicion deberia estar en i-1)
         try:
@@ -52,6 +53,7 @@ def get_full_ss_string(throw_order):
 
 def get_ss_from_seq_non_0(throw_order: list(), test_numbers=5) -> str:
     ss = get_full_ss_string(throw_order)
+    ss = ss.replace('-','')
     # El periodo maximo es la longitud entre 2 porque el ss se tiene que repetir al menos 2 veces
     max_period = (len(ss)//2)
     # El numero de comprobaciones es el recibido por parametro o el mas grande posible

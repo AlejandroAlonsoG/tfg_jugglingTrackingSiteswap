@@ -9,16 +9,7 @@ from prediction.seq_preprocessing import point_extractor
 from prettytable import PrettyTable
 from tracking.data_saver_files.mot16_utils import load_data 
 import concurrent.futures
-
-# CONSTANTS
-gt_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'
-tracking_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'
-dataset_dir = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
-#dataset_dir = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/jugglingLab/'
-video_file_format = 'ss{}_red2_AlejandroAlonso.mp4' # ss
-#video_file_format = 'ss{}_red_JugglingLab.mp4' # ss
-gt_file_format = "{}_manual2.txt" # ss
-tracking_file_format = '{}_{}.txt' # ss, tracking_system
+import yaml
 
 def eq_ss(str1, str2):
     if len(str1) != len(str2):
@@ -152,23 +143,47 @@ def execute(evaluate = False, tracking_system = "", color_range = None, max_ball
 
 
 if __name__ == "__main__":
-    #siteswaps = ['1', '31', '330', '40', '3', '423', '441', '531', '51', '4', '633', '5551', '525', '534', '66611', '561', '75314', '5', '645', '744', '91', '6']
-    #siteswaps = ['1', '3', '423', '441', '5']
-    siteswaps = ['561']
-    tracking_systems = ['ColorTrackingMaxBalls', 'ColorTrackingV0', 'BgSubstractionMaxBalls', 'BgSubstractionV0']
-    color_range = 168,140,69,175,255,198
-    #color_range = 0, 50, 0, 255, 255, 255
+    with open('AlejandroAlonso/files/config.yml', 'r') as f:
+        config = yaml.safe_load(f)
+
+    # CONSTANTS
+    global gt_dir 
+    global tracking_dir
+    global dataset_dir 
+    global video_file_format 
+    global gt_file_format
+    global tracking_file_format
+    gt_dir = config['gt_dir']
+    tracking_dir = config['tracking_dir']
+    dataset_dir = config['dataset_dir']
+    video_file_format = config['video_file_format']
+    gt_file_format = config['gt_file_format']
+    tracking_file_format= config['tracking_file_format']
+
+    # PARAMETERS
+    siteswaps = config['siteswaps']
+    tracking_systems = config['tracking_systems']
+    color_range = [int(num) for num in config['color_range'].split(',')]
+    evaluate = config['evaluate']
+    tracking_preprocessing = config['tracking_preprocessing']
+    max_cuadrant_misses = config['max_cuadrant_misses']
+    ss_test_numbers = config['ss_test_numbers']
+    max_perido_threshold = config['max_perido_threshold']
+    decimal_round = config['decimal_round']
+    save_data = config['save_data']
+
     table = PrettyTable()
-    table.field_names = ["ss", "MOTP", "MOTA", "Presence", "Prediction", "System used", "Num misses (cuadrants)", "Works"]
+    table.field_names = config['table_field_names']
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Para cada valor de 'param' creamos un objeto Future que ejecuta la función 'test'
-        futures = {executor.submit(execute, True, tracking_systems[0], color_range, int(sum(int(char) for char in ss) / len(ss)), False, 0.49, 5, 1.5, 3, ss, 2): (ss) for ss in siteswaps}
+        futures = {executor.submit(execute, evaluate, tracking_systems[0], color_range, int(sum(int(char) for char in ss) / len(ss)), tracking_preprocessing, max_cuadrant_misses, ss_test_numbers, max_perido_threshold, decimal_round, ss, save_data): (ss) for ss in siteswaps}
 
         # Esperamos a que todas las ejecuciones de la función 'test' terminen
         concurrent.futures.wait(futures)
     
     for future in futures:
+        print(future.result())
         table.add_row(future.result())
     print(table)
 

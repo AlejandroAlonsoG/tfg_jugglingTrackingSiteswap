@@ -5,14 +5,17 @@ from prediction.ss_prediction import prediction
 siteswaps = [
     ('1',1), ('3',3), ('4',4), ('5',5), ('31',2), ('51',3), ('423',3), ('441',3), ('525',4), ('531',3), ('633',4)
 ]
+siteswaps = [
+    ('7',7)
+]
 # Configuration
-color_range = 35,30,150,185,120,255
+color_range = 13, 43, 162, 35, 196, 255
 
 print("\tss\t2\t3\t4\t5\t10\tAny")
 for ss, max_balls in siteswaps:
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+ss+'_red_AlejandroAlonso.mp4'
+    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/instagram/ss'+ss+'_gonzalopurvis.mp4'
     # Tracking
-    ids = color_tracking_max_balls(source_path, color_range, max_balls=max_balls, visualize=False)
+    ids = color_tracking_max_balls(source_path, color_range, max_balls=max_balls, visualize=True)
 
     # SS
     throw_seq = seq_extraction(ids)

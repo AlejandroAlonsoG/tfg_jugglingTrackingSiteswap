@@ -6,8 +6,9 @@ import numpy as np
 from PIL import Image
 
 save_dir='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/'
-dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
+#dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
 #dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/jugglingLab/'
+dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/instagram/'
 output_path='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/videos/'
 
 #path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_ColorTracking.xlsx'
@@ -50,6 +51,7 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
         path_book+='.txt'
 
     source_path= f'{dataset_dir}ss{ss}_{video_source}.mp4'
+    print(source_path)
     if file_mode==1:
         data,num_balls = eu.load_data(path_book)
     else:
@@ -102,6 +104,7 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
                     start_point = (coords_x-square_len//2, coords_y-square_len//2)
                     end_point = (coords_x+square_len//2, coords_y+square_len//2)
                     cv2.rectangle(img, start_point, end_point, colors_reorder[i], 4)
+                    #cv2.circle(img, (coords_x,coords_y), 25, colors_reorder[i], -1)
 
                     org = (coords_x+square_len//2+2, coords_y-square_len//2+2)
                     cv2.putText(img, str(i+1), org, cv2.FONT_HERSHEY_SIMPLEX, 2, colors_reorder[i], 4)
@@ -114,7 +117,7 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
             out.write(img)
             if visualize:
                 cv2.imshow('img', img)
-                k=cv2.waitKey(0)
+                k=cv2.waitKey(1)
                 if k==27: break
         else:
             break
@@ -128,17 +131,18 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
     print("Vide saved in: ", out_name)
 
 if __name__ == "__main__":
-    ss = '5'
+    ss = '9'
     system = 'ColorTrackingMaxBalls'
-    #system = 'BgSubstractionTracking'
+    #system = 'BgSubstractionV0'
+    #system = 'BgSubstractionMaxBalls'
     #system = 'ColorTrackingV0'
 
-    video_source = 'red2_AlejandroAlonso'
+    video_source = 'rohanjuggler'
     #video_source = 'red_JugglingLab'
 
     visualize=True
     square_len=50
-    trayectory_limit = 12
+    trayectory_limit = 4
     file_mode=2
     point = None
 
