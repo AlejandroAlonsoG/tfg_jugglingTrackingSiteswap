@@ -5,11 +5,9 @@ import tracking.data_saver_files.mot16_utils as mu
 import numpy as np
 from PIL import Image
 
-save_dir='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/'
-#dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
-#dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/jugglingLab/'
-dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/instagram/'
-output_path='/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/videos/'
+save_dir='/home/alex/tfg_jugglingTrackingSiteswap/results/'
+dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
+output_path='/home/alex/tfg_jugglingTrackingSiteswap/results/videos/'
 
 #path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_ColorTracking.xlsx'
 #path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_manual.xlsx'
@@ -131,16 +129,16 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
     print("Vide saved in: ", out_name)
 
 if __name__ == "__main__":
-    ss = '9'
+    ss = '7'
     system = 'ColorTrackingMaxBalls'
     #system = 'BgSubstractionV0'
     #system = 'BgSubstractionMaxBalls'
     #system = 'ColorTrackingV0'
 
-    video_source = 'rohanjuggler'
+    video_source = 'red2_AlejandroAlonso'
     #video_source = 'red_JugglingLab'
 
-    visualize=True
+    visualize=False
     square_len=50
     trayectory_limit = 4
     file_mode=2
