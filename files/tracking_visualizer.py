@@ -126,7 +126,7 @@ def tracking_visualizer(ss, system, save_dir, dataset_dir, output_path, visualiz
     if visualize:
         cv2.destroyAllWindows()
 
-    print("Vide saved in: ", out_name)
+    print("Video saved in: ", out_name)
 
 if __name__ == "__main__":
     ss = '7'
