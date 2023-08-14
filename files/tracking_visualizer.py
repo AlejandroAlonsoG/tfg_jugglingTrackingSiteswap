@@ -5,22 +5,22 @@ import tracking.data_saver_files.mot16_utils as mu
 import numpy as np
 from PIL import Image
 
-save_dir='/home/alex/tfg_jugglingTrackingSiteswap/results/'
-dataset_dir='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
-output_path='/home/alex/tfg_jugglingTrackingSiteswap/results/videos/'
+save_dir='./results/'
+dataset_dir='./dataset/tanda2/'
+output_path='./results/videos/'
 
-#path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_ColorTracking.xlsx'
-#path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_short_manual.xlsx'
-#path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_ss3_red_AlejandroAlonso_ColorTracking.xlsx'
-#path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_ss5_red_AlejandroAlonso_ColorTracking.xlsx'
-#path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/50.xlsx'
+#path_book = './AlejandroAlonso/results/excels/tracking_short_ColorTracking.xlsx'
+#path_book = './AlejandroAlonso/results/excels/tracking_short_manual.xlsx'
+#path_book = './AlejandroAlonso/results/excels/tracking_ss3_red_AlejandroAlonso_ColorTracking.xlsx'
+#path_book = './AlejandroAlonso/results/excels/tracking_ss5_red_AlejandroAlonso_ColorTracking.xlsx'
+#path_book = './AlejandroAlonso/results/excels/50.xlsx'
 
-#path_book = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/3_manual.txt'
-#path_book1 = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/tracking_ss3_red_AlejandroAlonso_ColorTracking.xlsx'
+#path_book = './AlejandroAlonso/results/mot16/GroundTruth/3_manual.txt'
+#path_book1 = './AlejandroAlonso/results/excels/tracking_ss3_red_AlejandroAlonso_ColorTracking.xlsx'
 
-#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/tests/short.mp4' # Url of source video
-#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss3_red_AlejandroAlonso.mp4' # Url of source video
-#source_path='/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss5_red_AlejandroAlonso.mp4' # Url of source video
+#source_path='./dataset/tests/short.mp4' # Url of source video
+#source_path='./dataset/ss3_red_AlejandroAlonso.mp4' # Url of source video
+#source_path='./dataset/ss5_red_AlejandroAlonso.mp4' # Url of source video
 
 
 

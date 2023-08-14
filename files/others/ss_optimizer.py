@@ -1,7 +1,7 @@
 from prediction.ss_prediction import prediction
 
 data = {}
-with open('/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Optimizer/seq.txt', 'r') as f:
+with open('./AlejandroAlonso/results/mot16/Optimizer/seq.txt', 'r') as f:
     for line in f:
         tokens= line.split("_")
         ss = tokens[0]

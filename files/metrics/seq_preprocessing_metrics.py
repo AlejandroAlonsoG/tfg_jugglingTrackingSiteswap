@@ -40,7 +40,7 @@ if __name__ == "__main__":
     table = PrettyTable()
     table.field_names = ["ss", "gt", "pred", "dist", "in_range"]
     for ss, point_gt in siteswaps:
-        source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+ss+'_red_AlejandroAlonso.mp4'
+        source_path = './dataset/ss'+ss+'_red_AlejandroAlonso.mp4'
         point_pred = point_extractor(source_path,convergence_threshold=1, visualize=False)
         dist, in_range = distancia_y_rango(point_gt, point_pred, 30)
         table.add_row([ss, point_gt, point_pred, dist, in_range])

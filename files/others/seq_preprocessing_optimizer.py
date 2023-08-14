@@ -4,10 +4,10 @@ from prediction.ss_prediction import prediction
 from prediction.seq_preprocessing import point_extractor
 from tracking.data_saver_files.mot16_utils import load_data 
 # CONSTANTS
-gt_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'
-tracking_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'
-dataset_dir = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
-#dataset_dir = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/jugglingLab/'
+gt_dir = './AlejandroAlonso/results/mot16/GroundTruth/'
+tracking_dir = './AlejandroAlonso/results/mot16/Tracking/'
+dataset_dir = './dataset/tanda2/'
+#dataset_dir = './dataset/jugglingLab/'
 video_file_format = 'ss{}_red2_AlejandroAlonso.mp4' # ss
 #video_file_format = 'ss{}_red_JugglingLab.mp4' # ss
 gt_file_format = "{}_manual2.txt" # ss
@@ -45,7 +45,7 @@ def main():
 
         # Esperamos a que todas las ejecuciones de la función 'test' terminen
         concurrent.futures.wait(futures)
-        with open("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/res_seq_preprocessing_optimizer.txt", "w") as f:
+        with open("./AlejandroAlonso/results/res_seq_preprocessing_optimizer.txt", "w") as f:
             for future in futures:
                 f.write(f'{future.result()}\n')
 

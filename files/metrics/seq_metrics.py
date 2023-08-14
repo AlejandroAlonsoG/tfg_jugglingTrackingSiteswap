@@ -26,8 +26,8 @@ def seq_metrics(ss, tSource):
 
 if __name__ == "__main__":
  
-    sources = ['/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/{}_manual2.txt',
-               '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/{}_ColorTracking.txt']
+    sources = ['./AlejandroAlonso/results/mot16/GroundTruth/{}_manual2.txt',
+               './AlejandroAlonso/results/mot16/Tracking/{}_ColorTracking.txt']
     # ss, num_balls, [GT]
     siteswaps_1 = [
         ('3',3, [0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2]), \
@@ -68,7 +68,7 @@ if __name__ == "__main__":
             # Tracking
             ids = load_data(source_path)
             # Seq prep
-            #   point = bg_substraction_tracking('/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss{}_red_AlejandroAlonso.mp4'.format(ss),convergence_threshold=0)
+            #   point = bg_substraction_tracking('./dataset/ss{}_red_AlejandroAlonso.mp4'.format(ss),convergence_threshold=0)
             #   print(point)
             # Seq
             #   throw_seq, num_misses = seq_extraction_cuadrants(ids, point, 0,0)

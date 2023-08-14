@@ -204,6 +204,6 @@ def color_tracking_max_balls(source_path, hsv_range, non_max_suppresion_threshol
 
 if __name__ == "__main__":
     max_balls = 3
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss423_red_AlejandroAlonso.mp4'
+    source_path = './dataset/ss423_red_AlejandroAlonso.mp4'
     color_range = 35,30,150,185,120,255
     color_tracking_max_balls(source_path, color_range, max_balls=max_balls, save_data=2, visualize=True)

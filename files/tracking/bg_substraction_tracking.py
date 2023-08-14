@@ -140,5 +140,5 @@ def bg_substraction_tracking(source_path, min_contour_area=1000, enclosing_area_
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/instagram/ss534_benjamin_klopcic.mp4'
+    source_path = './dataset/instagram/ss534_benjamin_klopcic.mp4'
     bg_substraction_tracking(source_path,visualize=True, save_data=-1)

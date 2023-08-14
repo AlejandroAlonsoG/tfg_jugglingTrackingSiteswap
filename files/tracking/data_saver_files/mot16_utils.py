@@ -1,4 +1,4 @@
-save_dir = '/home/alex/tfg_jugglingTrackingSiteswap/results/mot16/'
+save_dir = './results/mot16/'
 bounding_box_size = 50
 
 

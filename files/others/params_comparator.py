@@ -2,8 +2,8 @@ import os
 from metrics.motmetrics import motMetricsEnhancedCalculator
 from openpyxl import Workbook
 
-gt_path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'
-t_path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'
+gt_path = './AlejandroAlonso/results/mot16/GroundTruth/'
+t_path = './AlejandroAlonso/results/mot16/Tracking/'
 ss=3
 directory = os.fsencode(t_path)
 

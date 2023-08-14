@@ -42,7 +42,7 @@ def kalman_tester(gt_path,dt, u_x, u_y, std_acc, x_std_meas, y_std_meas):
 def test(ss):
     # Esta es la función que se ejecutará con diferentes valores de 'param'
     # En este ejemplo simplemente se devuelve el valor de 'param' elevado al cuadrado
-    gt_path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+str(ss[0])+'_manual.txt'
+    gt_path = './AlejandroAlonso/results/mot16/GroundTruth/'+str(ss[0])+'_manual.txt'
 
     best_results = []
     count_dt, count_ux, count_uy, count_stdacc, count_xstdmeas, count_ystdmemas = 0,0,0,0,0,0
@@ -120,7 +120,7 @@ def main():
         concurrent.futures.wait(futures)
 
         # Escribir los resultados a un fichero "res_concretos.txt" con formato: ss -> result
-        with open("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Optimizer/res_concretos.txt", "w") as f:
+        with open("./AlejandroAlonso/results/mot16/Optimizer/res_concretos.txt", "w") as f:
             for future in futures:
                 for result, dt, u_x, u_y, std_acc, x_std_meas, y_std_meas, ss in future.result():
                     f.write(str(ss) + "_" + str(dt) + "_" + str(u_x) + "_" + str(u_y) + "_" + str(std_acc) + "_" + str(x_std_meas) + "_" + str(y_std_meas) + " -> " + str(result) + "\n")
@@ -139,13 +139,13 @@ def main():
                 std_acc = random.choice(std_accs)
                 x_std_meas = random.choice(x_std_meass)
                 y_std_meas = random.choice(y_std_meass)
-                futures.append(executor.submit(kalman_tester, '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+str(ss[0])+'_manual.txt', dt, u_x, u_y, std_acc, x_std_meas, y_std_meas))
+                futures.append(executor.submit(kalman_tester, './AlejandroAlonso/results/mot16/GroundTruth/'+str(ss[0])+'_manual.txt', dt, u_x, u_y, std_acc, x_std_meas, y_std_meas))
 
                 # Esperamos a que todas las ejecuciones de la función 'test' terminen
                 concurrent.futures.wait(futures)
 
                 # Escribir los resultados a un fichero "res_random.txt" con formato: ss_dt_ux_uy_stdacc_xstdmeas_ystdmeas -> result
-                with open("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Optimizer/res_random_"+str(i)+".txt", "w") as f:
+                with open("./AlejandroAlonso/results/mot16/Optimizer/res_random_"+str(i)+".txt", "w") as f:
                     for future in futures:
                         total_dist, gt_path, dt, u_x, u_y, std_acc, x_std_meas, y_std_meas = future.result()
                         ss= re.search(r"\/(\d+)_manual\.txt$", gt_path).group(1)
@@ -158,7 +158,7 @@ def compare_random():
     thresholds['441'] = 13767.37
     thresholds['423'] = 12767.0
 
-    path = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Optimizer'
+    path = './AlejandroAlonso/results/mot16/Optimizer'
     output = 'res_concretos_extras.txt'
 
     with open(path+'/'+output, 'w') as output:

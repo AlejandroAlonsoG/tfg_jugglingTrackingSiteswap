@@ -66,10 +66,10 @@ def motMetricsEnhancedCalculator(ss, gtSource, tSource):
 if __name__ == "__main__":
     siteswaps = ['1', '3', '423', '441', '5']
     for ss in siteswaps:
-        #ret = motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual2.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTracking_preprocessing.txt')
-        ret = motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual2.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTrackingMaxBalls.txt')
-        #ret = motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual2.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_BgSubstractionTracking.txt')
-        #ret = motMetricsEnhancedCalculator(ss,'/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual.txt', '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_BgSubstractionTrackingMaxBalls.txt')
+        #ret = motMetricsEnhancedCalculator(ss,'./AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual2.txt', './AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTracking_preprocessing.txt')
+        ret = motMetricsEnhancedCalculator(ss,'./AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual2.txt', './AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTrackingMaxBalls.txt')
+        #ret = motMetricsEnhancedCalculator(ss,'./AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual2.txt', './AlejandroAlonso/results/mot16/Tracking/'+ss+'_BgSubstractionTracking.txt')
+        #ret = motMetricsEnhancedCalculator(ss,'./AlejandroAlonso/results/mot16/GroundTruth/'+ss+'_manual.txt', './AlejandroAlonso/results/mot16/Tracking/'+ss+'_BgSubstractionTrackingMaxBalls.txt')
         if ss == siteswaps[0]:
           print(ret)
         else:
