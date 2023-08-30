@@ -6,9 +6,9 @@ from files.prediction.ss_prediction import get_full_ss_string, prediction
 if __name__ == "__main__":
     ss = '3'
     num_balls = 3
-    source_path_video = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/jugglingLab/ss'+ss+'_red_JugglingLab.mp4'
-    #source_path_video = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss'+ss+'_red2_AlejandroAlonso.mp4'
-    source_path_file = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTrackingMaxBalls.txt'
+    source_path_video = './dataset/jugglingLab/ss'+ss+'_red_JugglingLab.mp4'
+    #source_path_video = './dataset/tanda2/ss'+ss+'_red2_AlejandroAlonso.mp4'
+    source_path_file = './AlejandroAlonso/results/mot16/Tracking/'+ss+'_ColorTrackingMaxBalls.txt'
 
     ids = load_data(source_path_file)
     print("--> Cuadrants")

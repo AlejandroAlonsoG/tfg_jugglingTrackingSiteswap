@@ -197,7 +197,7 @@ def color_tracking(source_path, hsv_range, non_max_suppresion_threshold=100, vis
     return ret_ids
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/ss1_red2_AlejandroAlonso.mp4'
+    source_path = './dataset/tanda2/ss1_red2_AlejandroAlonso.mp4'
     #color_range = 35,30,150,185,120,255
     #color_range = color_extractor(source_path)
     color_range = 168,140,69,175,255,198

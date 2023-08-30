@@ -3,7 +3,7 @@ import itertools
 
 info_name = 'Info'
 tracking_name = 'Tracking'
-save_dir = '/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/excels/'
+save_dir = './AlejandroAlonso/results/excels/'
 
 def book_initializer(system: str, ss:str) -> Workbook:
     book = Workbook()

@@ -6,7 +6,7 @@ from metrics.motmetrics import motMetricsEnhancedCalculator
 import random
 def test(ss, threshold):
     # Esta es la función que se ejecutará con diferentes valores de 'param'
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+str(ss[0])+'_red_AlejandroAlonso.mp4'
+    source_path = './dataset/ss'+str(ss[0])+'_red_AlejandroAlonso.mp4'
     res,_ = point_extractor(source_path,convergence_threshold=1, x_mul_threshold=threshold,  visualize=False)
     res1 = res >= ss[1][0] and res <= ss[1][0]
     res2 = abs(((ss[1][1]-ss[1][0]) //2) - res)
@@ -26,7 +26,7 @@ def main():
 
         # Esperamos a que todas las ejecuciones de la función 'test' terminen
         concurrent.futures.wait(futures)
-        with open("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/res_seq_optimizer.txt", "w") as f:
+        with open("./AlejandroAlonso/results/res_seq_optimizer.txt", "w") as f:
             for future in futures:
                 f.write(f'{future.result()}\n')
 

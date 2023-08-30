@@ -69,13 +69,13 @@ decimal_round: 3
 save_data: 2
 
 # Directory of the GroundTruth
-gt_dir: '/home/alex/tfg_jugglingTrackingSiteswap/results/mot16/GroundTruth/'
+gt_dir: './results/mot16/GroundTruth/'
 
 # Directory where the tracking files are saved
-tracking_dir: '/home/alex/tfg_jugglingTrackingSiteswap/results/mot16/Tracking/'
+tracking_dir: './results/mot16/Tracking/'
 
 # Directory of the dataset
-dataset_dir: '/home/alex/tfg_jugglingTrackingSiteswap/dataset/tanda2/'
+dataset_dir: './dataset/tanda2/'
 
 # Format of the name of the video files
 video_file_format: 'ss{}_red2_AlejandroAlonso.mp4'

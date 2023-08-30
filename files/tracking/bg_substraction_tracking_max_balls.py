@@ -143,5 +143,5 @@ def bg_substraction_tracking_max_balls(source_path, min_contour_area=1000, enclo
 
 
 if __name__ == "__main__":
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/instagram/ss6_cinqcent34.mp4'
+    source_path = './dataset/instagram/ss6_cinqcent34.mp4'
     bg_substraction_tracking_max_balls(source_path, max_balls=6, visualize=False, save_data=2)

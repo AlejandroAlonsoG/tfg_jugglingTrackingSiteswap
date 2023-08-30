@@ -6,7 +6,7 @@ from metrics.motmetrics import motMetricsEnhancedCalculator
 import random
 def test(ss, min_area, enclosing_area, arc_const):
     # Esta es la función que se ejecutará con diferentes valores de 'param'
-    source_path = '/home/alex/tfg_jugglingTrackingSiteswap/dataset/ss'+ss[0]+'_red_AlejandroAlonso.mp4'
+    source_path = './dataset/ss'+ss[0]+'_red_AlejandroAlonso.mp4'
     res = bg_substraction_tracking_max_balls(source_path,min_contour_area=min_area, enclosing_area_diff=enclosing_area, arc_const=arc_const, max_balls=ss[1], visualize=False, save_data=2)
     print(ss, min_area, enclosing_area, arc_const)
     return res
@@ -27,7 +27,7 @@ def main():
 
         # Esperamos a que todas las ejecuciones de la función 'test' terminen
         concurrent.futures.wait(futures)
-        """ with open("/home/alex/tfg_jugglingTrackingSiteswap/AlejandroAlonso/results/res_seq_optimizer.txt", "w") as f:
+        """ with open("./AlejandroAlonso/results/res_seq_optimizer.txt", "w") as f:
             for future in futures:
                 f.write(f'{future.result()}\n') """
 
